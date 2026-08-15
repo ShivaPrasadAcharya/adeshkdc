@@ -1,0 +1,3644 @@
+<!doctype html>
+<html lang="ne">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7b1f2b">
+  <title>आदेश पुस्तकालय प्रवेश — काठमाडौं जिल्ला अदालत</title>
+  <style>
+    :root {
+      --ink: #1f2430;
+      --muted: #667085;
+      --paper: #fffdfa;
+      --canvas: #f3eee6;
+      --line: #ddd4c7;
+      --maroon: #7b1f2b;
+      --maroon-dark: #5d1420;
+      --gold: #c59132;
+      --success: #177245;
+      --danger: #b42318;
+      --shadow: 0 22px 60px rgba(66, 44, 27, .12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 2%, rgba(197, 145, 50, .14), transparent 27rem),
+        linear-gradient(180deg, #f8f4ee 0%, var(--canvas) 100%);
+      font-family: "Noto Sans Devanagari", "Nirmala UI", Mangal, system-ui, sans-serif;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    button { cursor: pointer; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .page-ribbon {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      color: #fff;
+      background: #4f111b;
+      border-bottom: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 5px 18px rgba(45, 14, 19, .2);
+    }
+
+    .page-ribbon-inner {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      width: min(1180px, calc(100% - 32px));
+      min-height: 48px;
+      margin-inline: auto;
+    }
+
+    .advanced-search {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      padding: 6px 0;
+    }
+
+    .advanced-search-input {
+      width: clamp(180px, 28vw, 355px);
+      min-height: 34px;
+      padding: 7px 10px;
+      color: var(--ink);
+      background: #fffdfa;
+      border: 1px solid rgba(255,255,255,.38);
+      border-radius: 8px;
+      font-size: .84rem;
+    }
+
+    .advanced-search-input:focus-visible,
+    .advanced-search button:focus-visible,
+    .normalizer-toggle:focus-within {
+      outline: 2px solid #f6d98e;
+      outline-offset: 2px;
+    }
+
+    .advanced-search-btn,
+    .advanced-search-clear {
+      min-height: 34px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: .8rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .advanced-search-btn {
+      color: #3b2910;
+      background: #f6d98e;
+      border: 1px solid #f6d98e;
+    }
+
+    .advanced-search-clear {
+      display: none;
+      width: 34px;
+      padding-inline: 0;
+      color: #fff;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,.42);
+    }
+
+    .advanced-search-clear.is-visible { display: inline-grid; place-items: center; }
+
+    .normalizer-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #fff7e5;
+      font-size: .76rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .normalizer-toggle input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: #f6d98e;
+    }
+
+    .advanced-search-results {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      z-index: 1010;
+      width: min(760px, 100%);
+      max-height: min(62vh, 560px);
+      overflow: auto;
+      color: var(--ink);
+      background: #fffdfa;
+      border: 1px solid #d8cdbf;
+      border-radius: 12px;
+      box-shadow: 0 18px 48px rgba(45, 14, 19, .28);
+    }
+
+    .advanced-search-results[hidden] { display: none; }
+
+    .advanced-search-status {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      margin: 0;
+      padding: 10px 13px;
+      color: #5d1420;
+      background: #f7efe3;
+      border-bottom: 1px solid #e1d6c8;
+      font-size: .8rem;
+      font-weight: 750;
+    }
+
+    .advanced-search-list { margin: 0; padding: 0; list-style: none; }
+
+    .advanced-search-result + .advanced-search-result { border-top: 1px solid #eee5da; }
+
+    .advanced-search-result a {
+      display: block;
+      padding: 11px 13px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .advanced-search-result a:hover,
+    .advanced-search-result a:focus-visible { background: #fff6e6; }
+
+    .advanced-search-date {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--maroon);
+      font-size: .76rem;
+      font-weight: 850;
+    }
+
+    .advanced-search-snippet {
+      display: block;
+      color: #403935;
+      font-size: .82rem;
+      line-height: 1.55;
+    }
+
+    .advanced-search-snippet mark {
+      padding: 0 2px;
+      color: #311006;
+      background: #ffe08a;
+      border-radius: 3px;
+    }
+
+    .cause-list-nav {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 0;
+    }
+
+    .cause-list-nav label {
+      color: #f6d98e;
+      font-size: .84rem;
+      font-weight: 700;
+    }
+
+    .cause-list-nav select {
+      min-width: 170px;
+      padding: 7px 34px 7px 10px;
+      color: var(--ink);
+      background: #fffdfa;
+      border: 1px solid rgba(255,255,255,.38);
+      border-radius: 8px;
+      font-size: .84rem;
+      font-weight: 650;
+    }
+
+    .cause-list-nav select:focus-visible { outline: 2px solid #f6d98e; outline-offset: 2px; }
+    .cause-list-nav select:disabled { color: #7d7469; background: #e8e1d8; cursor: not-allowed; }
+
+    .folder-scan-btn {
+      display: none;
+      min-height: 34px;
+      padding: 6px 10px;
+      color: #3b2910;
+      background: #f6d98e;
+      border: 1px solid #f6d98e;
+      border-radius: 8px;
+      font-size: .8rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .folder-scan-btn.is-visible { display: inline-flex; align-items: center; }
+
+    .readme-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 34px;
+      padding: 6px 10px;
+      color: #fff7e5;
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.38);
+      border-radius: 8px;
+      font-size: .8rem;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .readme-btn:hover,
+    .readme-btn:focus-visible { color: #3b2910; background: #f6d98e; outline: none; }
+
+    .masthead {
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+      background: linear-gradient(118deg, var(--maroon-dark), var(--maroon) 64%, #913345);
+      border-bottom: 4px solid var(--gold);
+    }
+
+    .masthead::after {
+      content: "";
+      position: absolute;
+      inset: -12rem -7rem auto auto;
+      width: 30rem;
+      height: 30rem;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 50%;
+      box-shadow: 0 0 0 4rem rgba(255,255,255,.035), 0 0 0 8rem rgba(255,255,255,.025);
+    }
+
+    .masthead-inner, main, footer {
+      width: min(1180px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    .masthead-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 32px 0 34px;
+    }
+
+    .seal {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      color: var(--maroon-dark);
+      background: #f6d98e;
+      border: 2px solid rgba(255,255,255,.72);
+      border-radius: 50%;
+      box-shadow: 0 7px 18px rgba(0,0,0,.19);
+      font: 800 25px/1 Georgia, serif;
+    }
+
+    h1 {
+      margin: 0 0 5px;
+      font-size: clamp(1.42rem, 3vw, 2.25rem);
+      line-height: 1.18;
+      letter-spacing: -.025em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: rgba(255,255,255,.78);
+      font-size: .94rem;
+    }
+
+    .target-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 13px;
+      white-space: nowrap;
+      color: #fff7e5;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+      font-size: .86rem;
+      font-weight: 700;
+    }
+
+    .target-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #f6d98e;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(246,217,142,.16);
+    }
+
+    main { padding: 30px 0 18px; }
+
+    .intro {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: end;
+      margin: 0 0 18px;
+    }
+
+    .intro h2 { margin: 0 0 5px; font-size: 1.1rem; }
+    .intro p { max-width: 750px; margin: 0; color: var(--muted); font-size: .91rem; line-height: 1.65; }
+
+    .privacy-note {
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+      flex: none;
+      color: #4d5b50;
+      font-size: .78rem;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      overflow: hidden;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 67px;
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.68);
+    }
+
+    .panel-title { display: flex; gap: 11px; align-items: center; }
+
+    .step {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      flex: none;
+      color: #fff;
+      background: var(--maroon);
+      border-radius: 9px;
+      font-weight: 800;
+      font-size: .84rem;
+    }
+
+    .panel h3 { margin: 0; font-size: .98rem; }
+
+    .segmented {
+      display: flex;
+      padding: 3px;
+      background: #eee8df;
+      border-radius: 10px;
+    }
+
+    .segmented button {
+      padding: 7px 10px;
+      color: var(--muted);
+      background: transparent;
+      border: 0;
+      border-radius: 7px;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .segmented button[aria-selected="true"] {
+      color: var(--maroon);
+      background: #fff;
+      box-shadow: 0 2px 7px rgba(57,40,27,.1);
+    }
+
+    .panel-body { padding: 18px; }
+
+    .drop-zone {
+      display: grid;
+      place-items: center;
+      min-height: 300px;
+      padding: 30px;
+      text-align: center;
+      background: #fbf8f3;
+      border: 1.5px dashed #c9bba9;
+      border-radius: 14px;
+      transition: .18s ease;
+    }
+
+    .drop-zone.is-dragging {
+      color: var(--maroon);
+      background: #fff7ed;
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .upload-icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 14px;
+      color: var(--maroon);
+      background: #f3e4e6;
+      border-radius: 16px;
+      font-size: 27px;
+    }
+
+    .drop-zone strong { display: block; margin-bottom: 7px; }
+    .drop-zone p { margin: 0 0 15px; color: var(--muted); font-size: .82rem; }
+
+    .file-name {
+      display: block;
+      max-width: 100%;
+      margin-top: 12px;
+      overflow: hidden;
+      color: var(--success);
+      font-size: .8rem;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 15px;
+      resize: vertical;
+      color: #263042;
+      background: #fbfaf8;
+      border: 1px solid #cfc6ba;
+      border-radius: 12px;
+      outline: 0;
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: .78rem;
+      line-height: 1.55;
+      tab-size: 2;
+    }
+
+    textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(197,145,50,.15); }
+    textarea[readonly] { background: #f7f7f6; }
+
+    .hidden { display: none !important; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 39px;
+      padding: 9px 13px;
+      color: #344054;
+      background: #fff;
+      border: 1px solid #cfc6ba;
+      border-radius: 10px;
+      font-size: .82rem;
+      font-weight: 750;
+      transition: .15s ease;
+    }
+
+    .btn:hover:not(:disabled) { border-color: #ae9b83; transform: translateY(-1px); }
+    .btn:focus-visible { outline: 3px solid rgba(197,145,50,.28); outline-offset: 2px; }
+    .btn:disabled { cursor: not-allowed; opacity: .45; }
+
+    .btn-primary {
+      min-height: 44px;
+      padding-inline: 18px;
+      color: #fff;
+      background: linear-gradient(180deg, #8d2a38, var(--maroon));
+      border-color: var(--maroon);
+      box-shadow: 0 8px 18px rgba(123,31,43,.19);
+    }
+
+    .btn-subtle { color: var(--maroon); background: #fff8f0; border-color: #e7d8c3; }
+    .btn.is-copied { color:#fff; background:#238636; border-color:#238636; box-shadow:0 7px 18px rgba(35,134,54,.24); }
+
+    .input-history {
+      display:grid;
+      grid-template-columns:auto minmax(0,1fr) auto;
+      gap:8px;
+      align-items:center;
+      margin-top:10px;
+      padding:9px 10px;
+      background:#fbf8f3;
+      border:1px solid #e4dbcf;
+      border-radius:10px;
+    }
+    .input-history label { color:#514347; font-size:.78rem; font-weight:800; }
+    .input-history select { min-width:0; width:100%; min-height:37px; padding:7px 30px 7px 9px; border:1px solid #cfc6ba; border-radius:8px; background:#fff; }
+    .input-history .btn { min-height:37px; padding:7px 10px; }
+
+    .judge-picker {
+      display: grid;
+      grid-template-columns: auto minmax(190px, 1fr);
+      gap: 9px 12px;
+      align-items: center;
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px 13px;
+      background: #f8f3eb;
+      border: 1px solid #e2d7c8;
+      border-radius: 12px;
+    }
+
+    .judge-picker label {
+      color: #46383a;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .judge-picker select {
+      width: 100%;
+      min-height: 41px;
+      padding: 8px 34px 8px 11px;
+      color: #2c2530;
+      background: #fff;
+      border: 1px solid #cfc6ba;
+      border-radius: 9px;
+      outline: 0;
+    }
+
+    .judge-picker select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(197,145,50,.15); }
+    .judge-picker small { grid-column: 1 / -1; color: var(--muted); font-size: .72rem; }
+
+    .row-filter-control {
+      display: grid;
+      gap: 9px;
+      margin-top: 10px;
+    }
+    .row-filter-toggle {
+      width: 100%;
+      min-height: 42px;
+      color: var(--maroon);
+      background: #fffaf2;
+      border: 1px solid #dfcda9;
+      font-weight: 850;
+    }
+    .row-filter-toggle[aria-expanded="true"] {
+      color: #fff;
+      background: var(--maroon);
+      border-color: var(--maroon);
+    }
+    .row-filter-panel {
+      display: grid;
+      gap: 9px;
+      padding: 12px;
+      background: #fbf8f2;
+      border: 1px solid #e2d7c8;
+      border-radius: 12px;
+    }
+    .row-filter-panel[hidden] { display: none; }
+    .row-filter-intro,
+    .row-filter-status { margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.55; }
+    .row-filter-status { color: #6b1a27; font-weight: 750; }
+    .row-filter-list { display: grid; gap: 8px; }
+    .row-filter-item {
+      display: grid;
+      grid-template-columns: minmax(150px, .72fr) minmax(180px, 1fr);
+      gap: 6px 10px;
+      align-items: center;
+      padding: 9px 10px;
+      background: #fff;
+      border: 1px solid #e1d8cc;
+      border-radius: 9px;
+    }
+    .row-filter-item label { color: #443538; font-size: .79rem; font-weight: 850; }
+    .row-filter-item input {
+      width: 100%;
+      min-width: 0;
+      min-height: 39px;
+      padding: 7px 10px;
+      color: #2d2528;
+      background: #fff;
+      border: 1px solid #cfc6ba;
+      border-radius: 8px;
+      font: 700 .82rem/1.35 inherit;
+    }
+    .row-filter-item input:focus { border-color: var(--gold); outline: 0; box-shadow: 0 0 0 3px rgba(197,145,50,.15); }
+    .row-filter-item small { grid-column: 1 / -1; color: #786d70; font-size: .68rem; line-height: 1.45; }
+
+    .date-loader {
+      display: grid;
+      gap: 9px;
+      margin-bottom: 14px;
+      padding: 13px;
+      background: #f8f3eb;
+      border: 1px solid #e2d7c8;
+      border-radius: 12px;
+    }
+
+    .date-loader label { color: #46383a; font-size: .82rem; font-weight: 800; }
+    .date-loader-row { display: flex; gap: 8px; }
+    .date-loader input {
+      min-width: 0;
+      min-height: 41px;
+      flex: 1;
+      padding: 8px 11px;
+      color: #2c2530;
+      background: #fff;
+      border: 1px solid #cfc6ba;
+      border-radius: 9px;
+      outline: 0;
+    }
+    .date-loader input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(197,145,50,.15); }
+    .date-loader small { color: var(--muted); font-size: .72rem; line-height: 1.5; }
+
+    .inline-preview {
+      width: 100%;
+      min-height: 520px;
+      margin-top: 14px;
+      background: #fff;
+      border: 1px solid #cfc6ba;
+      border-radius: 12px;
+    }
+    .inline-preview.is-monthly { min-height: 760px; }
+    .monthly-preview { display: grid; gap: 18px; margin-top: 14px; }
+    .monthly-preview-item { padding: 10px; background: #fff; border: 1px solid #cfc6ba; border-radius: 12px; }
+    .monthly-preview-item h4 { margin: 0 0 9px; color: var(--maroon); font-size: .94rem; }
+    .monthly-preview-item iframe { display: block; width: 100%; height: 1100px; background: #fff; border: 1px solid #d7cec4; border-radius: 8px; }
+
+    .lookup-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(20,16,18,.62);
+    }
+    .lookup-modal.is-open { display: grid; }
+    .lookup-modal-card {
+      width: min(430px, 100%);
+      padding: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    .lookup-modal-card h2 { margin: 0 0 8px; color: var(--maroon); font-size: 1.08rem; }
+    .lookup-modal-card p { margin: 0 0 16px; color: var(--muted); line-height: 1.6; }
+
+    .output-empty {
+      display: grid;
+      place-items: center;
+      min-height: 300px;
+      padding: 36px;
+      color: var(--muted);
+      text-align: center;
+      background: repeating-linear-gradient(-45deg, #faf8f4, #faf8f4 11px, #f7f4ef 11px, #f7f4ef 22px);
+      border: 1px solid #e2dad0;
+      border-radius: 12px;
+    }
+
+    .output-empty b { display: block; margin-bottom: 6px; color: #4e5664; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat {
+      padding: 10px 9px;
+      text-align: center;
+      background: #f6f1e9;
+      border: 1px solid #e4dbce;
+      border-radius: 10px;
+    }
+
+    .stat strong { display: block; color: var(--maroon); font-size: 1rem; }
+    .stat span { color: var(--muted); font-size: .69rem; }
+
+    .status {
+      min-height: 24px;
+      margin-top: 11px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+
+    .status.success { color: var(--success); }
+    .status.error { color: var(--danger); }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 0 32px;
+      color: #766e64;
+      font-size: .76rem;
+    }
+
+    @media (max-width: 1080px) {
+      .page-ribbon-inner { align-items: stretch; flex-direction: column; gap: 0; padding-block: 4px; }
+      .advanced-search { width: 100%; padding-bottom: 3px; }
+      .advanced-search-input { flex: 1; width: auto; }
+      .cause-list-nav { justify-content: flex-end; }
+      .advanced-search-results { top: calc(100% + 8px); }
+    }
+
+    @media (max-width: 860px) {
+      .page-ribbon-inner { align-items: stretch; flex-direction: column; gap: 0; padding-block: 4px; }
+      .advanced-search { width: 100%; padding-bottom: 3px; }
+      .advanced-search-input { flex: 1; width: auto; }
+      .cause-list-nav { justify-content: flex-end; }
+      .advanced-search-results { top: calc(100% + 8px); }
+      .masthead-inner { grid-template-columns: 48px 1fr; }
+      .seal { width: 48px; height: 48px; }
+      .target-pill { grid-column: 1 / -1; width: fit-content; }
+      .intro { align-items: start; flex-direction: column; gap: 9px; }
+      .workspace { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .page-ribbon-inner { width: min(100% - 20px, 1180px); }
+      .advanced-search { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto; }
+      .advanced-search-input { grid-column: 1 / -1; width: 100%; }
+      .normalizer-toggle { justify-self: start; }
+      .cause-list-nav { display: grid; grid-template-columns: auto 1fr; width: 100%; }
+      .cause-list-nav select { width: 100%; min-width: 0; }
+      .folder-scan-btn, .readme-btn { grid-column: 1 / -1; justify-content: center; }
+      .masthead-inner, main, footer { width: min(100% - 20px, 1180px); }
+      .masthead-inner { padding-block: 24px; gap: 12px; }
+      .panel-head { align-items: flex-start; flex-direction: column; }
+      .segmented { width: 100%; }
+      .segmented button { flex: 1; }
+      .panel-body { padding: 13px; }
+      .drop-zone { min-height: 245px; padding: 22px 15px; }
+      textarea { min-height: 245px; }
+      .actions .btn { flex: 1 1 auto; }
+      .btn-primary { flex-basis: 100% !important; }
+      .judge-picker { grid-template-columns: 1fr; }
+      .judge-picker small { grid-column: auto; }
+      .row-filter-item { grid-template-columns: 1fr; }
+      .row-filter-item small { grid-column: auto; }
+      .input-history { grid-template-columns:1fr; }
+      .date-loader-row { align-items: stretch; flex-direction: column; }
+      .inline-preview { min-height: 420px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      footer { flex-direction: column; }
+    }
+  </style>
+  <link id="cause-list-firebase-sync-style" rel="stylesheet" href="firebase-sync.css">
+</head>
+<body>
+  <nav id="causeListSiblingManifest" hidden aria-hidden="true">
+    <a data-project-file href="orders.html">orders.html</a>
+    <a data-project-file href="order_data_part_01.js">order_data_part_01.js</a>
+    <a data-project-file href="order_data_part_02.js">order_data_part_02.js</a>
+    <a data-project-file href="order_data_part_03.js">order_data_part_03.js</a>
+    <a data-project-file href="order_data_part_04.js">order_data_part_04.js</a>
+    <a data-project-file href="order-library.js">order-library.js</a>
+    <a data-project-file href="order-library.css">order-library.css</a>
+    <a data-project-file href="README.html">README.html</a>
+    <a data-project-file href="cause-list-runtime.js">cause-list-runtime.js</a>
+    <a data-project-file href="cause-list-runtime.css">cause-list-runtime.css</a>
+    <a data-project-file href="firebase-sync.js">firebase-sync.js</a>
+    <a data-project-file href="firebase-sync.css">firebase-sync.css</a>
+    <a data-project-file href="nepali-proofreader-engine.js">nepali-proofreader-engine.js</a>
+    <a data-project-file href="cause-list-files.js">cause-list-files.js</a>
+    <a data-project-file href="cause-list-ribbon.js">cause-list-ribbon.js</a>
+    <a data-project-file href="cause-list-ribbon.css">cause-list-ribbon.css</a>
+  </nav>
+  <nav class="page-ribbon" aria-label="उपलब्ध पेशी सूची">
+    <div class="page-ribbon-inner">
+      <form class="advanced-search" id="advancedSearchForm" role="search">
+        <label class="sr-only" for="advancedSearchInput">सबै पेशी सूचीमा खोज्नुहोस्</label>
+        <input class="advanced-search-input" type="search" id="advancedSearchInput" autocomplete="off" placeholder="नाम, मुद्दा नं., पक्ष वा विषय खोज्नुहोस्…">
+        <label class="normalizer-toggle" title="रि/री/ऋ, श/ष/स, व/ब, नासिक्य अक्षर, नेपाली अंक र space लाई मिलाएर खोज्छ">
+          <input type="checkbox" id="nepaliNormalizerToggle" checked>
+          <span>Nepali normalizer</span>
+        </label>
+        <label class="normalizer-toggle" title="Checked हुँदा order/index.json मा जोडिएका attachment files को content मात्र खोज्छ">
+          <input type="checkbox" id="smartSearchToggle">
+          <span>स्मार्ट सर्च</span>
+        </label>
+        <button type="submit" class="advanced-search-btn" id="advancedSearchBtn">खोज्नुहोस्</button>
+        <button type="button" class="advanced-search-clear" id="advancedSearchClear" aria-label="खोज नतिजा बन्द गर्नुहोस्" title="खोज नतिजा बन्द गर्नुहोस्">×</button>
+      </form>
+      <div class="cause-list-nav">
+        <label for="causeMonthSelect">महिना</label>
+        <select id="causeMonthSelect" aria-controls="causeRibbonDateSelect">
+          <option value="">पेशी सूची खोजिँदैछ…</option>
+        </select>
+        <label for="causeRibbonDateSelect">मिति</label>
+        <select id="causeRibbonDateSelect" disabled>
+          <option value="">पहिला महिना रोज्नुहोस्</option>
+        </select>
+        <a class="readme-btn" href="README.html" target="_blank" rel="noopener" title="प्रयोग विधि खोल्नुहोस्">ⓘ प्रयोग विधि</a>
+        <button type="button" class="folder-scan-btn" id="scanCauseFolder">फाइल स्वतः खोज्नुहोस्</button>
+        <input type="file" id="causeFolderInput" webkitdirectory directory multiple hidden>
+      </div>
+      <section class="advanced-search-results" id="advancedSearchResults" aria-live="polite" hidden>
+        <p class="advanced-search-status" id="advancedSearchStatus"></p>
+        <ol class="advanced-search-list" id="advancedSearchList"></ol>
+      </section>
+    </div>
+  </nav>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="seal" aria-hidden="true">न्या</div>
+      <div>
+        <h1>आदेश पुस्तकालय प्रवेश</h1>
+        <p class="subtitle">Input/Output प्रयोग गर्नुहोस् वा Skip गरी आदेश-प्रकारअनुसारको मुख्य webpage खोल्नुहोस्</p>
+      </div>
+      <div class="target-pill" id="targetPill">लक्षित न्यायाधीश: शिवप्रसाद आचार्य</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="intro">
+      <div>
+        <h2>Source code राख्नुहोस्, filter गर्नुहोस् र तुरुन्त डाउनलोड गर्नुहोस्</h2>
+        <p>यो उपकरणले cause-list HTML filter गर्छ। Court-order TXT upload वा paste गर्दा ‘इति संवत/ईति संवत’ बाट एक वा धेरै आदेश छुट्याई एउटै <code>order_data_*.js</code> script पनि स्वतः बनाउँछ।</p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end">
+        <a class="btn btn-primary" href="orders.html" style="text-decoration:none">Skip Input/Output → मुख्य आदेश webpage</a>
+        <div class="privacy-note" title="फाइल बाह्य server मा पठाइँदैन">● Browser भित्रै प्रशोधन हुन्छ</div>
+      </div>
+    </div>
+
+    <section class="workspace" aria-label="Source code filter workspace">
+      <article class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="step">१</span>
+            <h3>Input source code</h3>
+          </div>
+          <div class="segmented" role="tablist" aria-label="Input method">
+            <button type="button" id="uploadTab" role="tab" aria-selected="false" aria-controls="uploadPane">फाइल Upload</button>
+            <button type="button" id="pasteTab" role="tab" aria-selected="true" aria-controls="pastePane">Code Paste</button>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="date-loader" id="causeDateLoader">
+            <label for="causeDateSearch">मितिअनुसार पेशी सूची खोज्नुहोस्</label>
+            <div class="date-loader-row">
+              <input id="causeDateSearch" inputmode="numeric" autocomplete="off" placeholder="२०८३।०४।१५ वा 20830415" aria-describedby="causeDateHint">
+              <button type="button" class="btn btn-subtle" id="causeDateSearchBtn">पेशी सूची खोज्नुहोस्</button>
+            </div>
+            <small id="causeDateHint">मिति YYYYMMDD वा YYYY।MM।DD मा लेख्नुहोस्। सम्बन्धित source फाइल indexYYYYMMDD.html बाट खुल्छ।</small>
+          </div>
+
+          <div id="uploadPane" class="hidden" role="tabpanel" aria-labelledby="uploadTab">
+            <div class="drop-zone" id="dropZone">
+              <div>
+                <div class="upload-icon" aria-hidden="true">⇧</div>
+                <strong>HTML वा TXT फाइल यहाँ राख्नुहोस्</strong>
+                <p>Drag &amp; drop गर्नुहोस् वा तलको button बाट छान्नुहोस्</p>
+                <button type="button" class="btn btn-subtle" id="chooseFile">फाइल छान्नुहोस्</button>
+                <input type="file" id="fileInput" accept=".html,.htm,.txt,text/html,text/plain" hidden>
+                <span class="file-name" id="fileName"></span>
+              </div>
+            </div>
+          </div>
+
+          <div id="pastePane" role="tabpanel" aria-labelledby="pasteTab">
+            <label for="sourceInput" class="hidden">पूरा HTML source code</label>
+            <textarea id="sourceInput" spellcheck="false" placeholder="यहाँ पूरा source code paste गर्नुहोस्…"></textarea>
+          </div>
+
+          <div class="input-history" aria-label="पछिल्ला input sessions">
+            <label for="inputHistorySelect">Last 3 sessions</label>
+            <select id="inputHistorySelect" disabled><option value="">History खाली छ</option></select>
+            <button type="button" class="btn btn-subtle" id="restoreInputHistory" disabled>Restore</button>
+          </div>
+
+          <div class="judge-picker" id="judgePickerControl">
+            <label for="judgeSelect">श्रीमान् छनोट गर्नुहोस्</label>
+            <select id="judgeSelect" aria-label="Filter र आदेशका लागि न्यायाधीश छान्नुहोस्">
+              <option value="शिवप्रसाद आचार्य">शिवप्रसाद आचार्य</option>
+            </select>
+            <small>Source code मा भेटिएका न्यायाधीशहरू यहाँ स्वतः थपिन्छन्।</small>
+          </div>
+
+          <div class="row-filter-control" id="rowFilterControl">
+            <button type="button" class="btn row-filter-toggle" id="rowFilterToggle" aria-expanded="false" aria-controls="rowFilterPanel" disabled>Filter Causelist Tables &amp; Rows</button>
+            <section class="row-filter-panel" id="rowFilterPanel" aria-label="प्रत्येक causelist table का rows छान्नुहोस्" hidden>
+              <p class="row-filter-intro">प्रत्येक table मा <b>ALL</b> default हो। निश्चित rows मात्र राख्न serial हरू comma ले छुट्याएर लेख्नुहोस्—जस्तै: <b>क, ग, २, ४</b>।</p>
+              <div class="row-filter-list" id="rowFilterList"></div>
+              <p class="row-filter-status" id="rowFilterStatus" role="status" aria-live="polite"></p>
+            </section>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn btn-primary" id="filterBtn">शिवप्रसाद आचार्यको data मात्र राख्नुहोस्</button>
+            <button type="button" class="btn" id="clearBtn" disabled>खाली गर्नुहोस्</button>
+          </div>
+          <div class="status" id="inputStatus" role="status" aria-live="polite">HTML वा TXT फाइल छान्नुहोस्, अथवा code paste गर्नुहोस्।</div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="step">२</span>
+            <h3 id="outputPanelTitle">Filtered output</h3>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="output-empty" id="outputEmpty">
+            <div><b>Output तयार भएको छैन</b>Input राखेर मुख्य action button थिच्नुहोस्।</div>
+          </div>
+
+          <div id="outputReady" class="hidden">
+            <div class="stats" aria-label="Filter summary">
+              <div class="stat"><strong id="inputSizeStat">० B</strong><span>Input data size</span></div>
+              <div class="stat"><strong id="retainedCount">०</strong><span id="retainedCountLabel">लक्षित इजलास</span></div>
+              <div class="stat"><strong id="removedCount">०</strong><span id="removedCountLabel">हटाइएका इजलास</span></div>
+              <div class="stat"><strong id="outputSize">० KB</strong><span>Output size</span></div>
+              <div class="stat"><strong id="causeListDateStat">—</strong><span id="causeListDateLabel">पेशी सूची मिति</span></div>
+              <div class="stat"><strong id="selectedRowCount">०</strong><span id="selectedRowCountLabel">Output rows</span></div>
+            </div>
+            <label for="sourceOutput" class="hidden">Filtered source code</label>
+            <textarea id="sourceOutput" readonly spellcheck="false"></textarea>
+            <div class="actions">
+              <button type="button" class="btn btn-primary" id="copyBtn">Copy to clipboard</button>
+              <button type="button" class="btn btn-primary hidden" id="downloadJs">Download order_data.js</button>
+              <button type="button" class="btn" id="downloadHtml">Download .html</button>
+              <button type="button" class="btn" id="downloadTxt">Download .txt</button>
+              <button type="button" class="btn" id="downloadJson">Download .json</button>
+              <button type="button" class="btn" id="previewBtn">Preview</button>
+            </div>
+            <iframe id="inlinePreview" class="inline-preview" title="छानिएको मितिको पेशी सूची" sandbox="allow-scripts allow-forms allow-modals allow-downloads allow-popups"></iframe>
+            <div id="monthlyPreview" class="monthly-preview hidden" aria-label="महिनाका सबै पेशी सूची"></div>
+          </div>
+          <div class="status" id="outputStatus" role="status" aria-live="polite"></div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <span id="footerTarget">Target: माननीय जिल्ला न्यायाधीश श्री शिवप्रसाद आचार्य</span>
+    <span>Keyboard shortcut: Ctrl/⌘ + Enter</span>
+  </footer>
+
+  <div class="lookup-modal" id="causeListMissingDialog" role="dialog" aria-modal="true" aria-labelledby="causeListMissingTitle" aria-describedby="causeListMissingMessage">
+    <div class="lookup-modal-card">
+      <h2 id="causeListMissingTitle">पेशी सूची भेटिएन</h2>
+      <p id="causeListMissingMessage">उक्त मितिको पेशी सूची भेटिएन।</p>
+      <button type="button" class="btn btn-primary" id="causeListMissingClose">ठीक छ</button>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const DEFAULT_TARGET_NAME = "शिवप्रसाद आचार्य";
+      const BS_MONTH_NAMES = ["वैशाख", "जेठ", "असार", "साउन", "भदौ", "असोज", "कात्तिक", "मंसिर", "पुस", "माघ", "फागुन", "चैत"];
+      const CAUSE_LIST_CACHE_KEY = "cause-list-auto-files-v1";
+      const INPUT_HISTORY_KEY = "cause-list-input-history-v1";
+
+      // Nepali spelling variants, digits and optional spaces are unified only for search.
+      const NepaliNormalizer = {
+        vowelMap: {
+          'ी': 'ि',
+          'ू': 'ु',
+          'ृ': 'ि',
+          'ऋ': 'रि',
+        },
+        sibilantMap: { 'श': 'स', 'ष': 'स' },
+        nasalMap:    { 'ङ': 'न', 'ण': 'न', 'ञ': 'न', 'ं': 'न्' },
+        vaBaMap:     { 'व': 'ब' },
+        numberMap:   { '०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9' },
+
+        _isDropped(ch, ignoreSpaces) {
+          if (ch === '\u200D' || ch === '\u200C') return true;
+          if (ignoreSpaces && /\s/.test(ch)) return true;
+          return false;
+        },
+
+        _transformChar(ch) {
+          let s = ch;
+          for (const [f, t] of Object.entries(this.vowelMap))    if (s === f) s = t;
+          for (const [f, t] of Object.entries(this.sibilantMap)) if (s === f) s = t;
+          for (const [f, t] of Object.entries(this.nasalMap))    if (s === f) s = t;
+          for (const [f, t] of Object.entries(this.vaBaMap))     if (s === f) s = t;
+          for (const [f, t] of Object.entries(this.numberMap))   if (s === f) s = t;
+          return s;
+        },
+
+        normalize(text, opts = {}) {
+          if (!text) return '';
+          return this._normalizeWithMap(text, opts).text;
+        },
+
+        _normalizeWithMap(text, opts = {}) {
+          const ignoreSpaces = !!opts.ignoreSpaces;
+          const src = text.normalize('NFC');
+          let out = '';
+          const indexMap = [];
+          for (let i = 0; i < src.length; i++) {
+            const ch = src[i];
+            if (this._isDropped(ch, ignoreSpaces)) continue;
+            const mapped = this._transformChar(ch);
+            for (const outCh of mapped) {
+              out += outCh;
+              indexMap.push(i);
+            }
+          }
+          return { text: out, indexMap };
+        },
+
+        isDevanagari(text) { return /[\u0900-\u097F]/.test(text); },
+
+        mapToOriginal(normPos, original, normalized, opts = {}) {
+          const { indexMap } = this._normalizeWithMap(original, opts);
+          if (normPos <= 0) return 0;
+          if (normPos >= indexMap.length) return original.length;
+          return indexMap[normPos];
+        },
+
+        search(query, text) {
+          if (!query || !text) return [];
+          const normQuery = this._normalizeWithMap(query, { ignoreSpaces: true }).text;
+          const { text: normText, indexMap } = this._normalizeWithMap(text, { ignoreSpaces: true });
+          if (!normQuery) return [];
+
+          const matches = [];
+          let fromIndex = 0;
+          while (fromIndex <= normText.length) {
+            const idx = normText.indexOf(normQuery, fromIndex);
+            if (idx === -1) break;
+            const startOrig = indexMap[idx];
+            const endOrig   = indexMap[idx + normQuery.length - 1] + 1;
+            matches.push({ start: startOrig, end: endOrig });
+            fromIndex = idx + 1;
+          }
+          return matches;
+        },
+
+        matches(query, text) {
+          return this.search(query, text).length > 0;
+        },
+      };
+
+      let targetName = DEFAULT_TARGET_NAME;
+      let targetKey = normalize(targetName);
+      let availableJudges = [DEFAULT_TARGET_NAME];
+
+      const uploadTab = document.getElementById("uploadTab");
+      const pasteTab = document.getElementById("pasteTab");
+      const uploadPane = document.getElementById("uploadPane");
+      const pastePane = document.getElementById("pastePane");
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const chooseFile = document.getElementById("chooseFile");
+      const fileName = document.getElementById("fileName");
+      const sourceInput = document.getElementById("sourceInput");
+      const sourceOutput = document.getElementById("sourceOutput");
+      const judgeSelect = document.getElementById("judgeSelect");
+      const judgePickerControl = document.getElementById("judgePickerControl");
+      const rowFilterControl = document.getElementById("rowFilterControl");
+      const causeDateLoader = document.getElementById("causeDateLoader");
+      const targetPill = document.getElementById("targetPill");
+      const footerTarget = document.getElementById("footerTarget");
+      const filterBtn = document.getElementById("filterBtn");
+      const rowFilterToggle = document.getElementById("rowFilterToggle");
+      const rowFilterPanel = document.getElementById("rowFilterPanel");
+      const rowFilterList = document.getElementById("rowFilterList");
+      const rowFilterStatus = document.getElementById("rowFilterStatus");
+      const clearBtn = document.getElementById("clearBtn");
+      const inputStatus = document.getElementById("inputStatus");
+      const outputStatus = document.getElementById("outputStatus");
+      const outputEmpty = document.getElementById("outputEmpty");
+      const outputReady = document.getElementById("outputReady");
+      const retainedCount = document.getElementById("retainedCount");
+      const removedCount = document.getElementById("removedCount");
+      const outputSize = document.getElementById("outputSize");
+      const inputSizeStat = document.getElementById("inputSizeStat");
+      const causeListDateStat = document.getElementById("causeListDateStat");
+      const selectedRowCount = document.getElementById("selectedRowCount");
+      const retainedCountLabel = document.getElementById("retainedCountLabel");
+      const removedCountLabel = document.getElementById("removedCountLabel");
+      const causeListDateLabel = document.getElementById("causeListDateLabel");
+      const selectedRowCountLabel = document.getElementById("selectedRowCountLabel");
+      const outputPanelTitle = document.getElementById("outputPanelTitle");
+      const downloadJs = document.getElementById("downloadJs");
+      const downloadHtml = document.getElementById("downloadHtml");
+      const downloadTxt = document.getElementById("downloadTxt");
+      const downloadJson = document.getElementById("downloadJson");
+      const previewBtn = document.getElementById("previewBtn");
+      const causeDateSearch = document.getElementById("causeDateSearch");
+      const causeDateSearchBtn = document.getElementById("causeDateSearchBtn");
+      const inlinePreview = document.getElementById("inlinePreview");
+      const monthlyPreview = document.getElementById("monthlyPreview");
+      const missingDialog = document.getElementById("causeListMissingDialog");
+      const missingMessage = document.getElementById("causeListMissingMessage");
+      const missingClose = document.getElementById("causeListMissingClose");
+      const causeMonthSelect = document.getElementById("causeMonthSelect");
+      const causeRibbonDateSelect = document.getElementById("causeRibbonDateSelect");
+      const scanCauseFolder = document.getElementById("scanCauseFolder");
+      const causeFolderInput = document.getElementById("causeFolderInput");
+      const advancedSearchForm = document.getElementById("advancedSearchForm");
+      const advancedSearchInput = document.getElementById("advancedSearchInput");
+      const advancedSearchBtn = document.getElementById("advancedSearchBtn");
+      const advancedSearchClear = document.getElementById("advancedSearchClear");
+      const nepaliNormalizerToggle = document.getElementById("nepaliNormalizerToggle");
+      const smartSearchToggle = document.getElementById("smartSearchToggle");
+      const advancedSearchResults = document.getElementById("advancedSearchResults");
+      const advancedSearchStatus = document.getElementById("advancedSearchStatus");
+      const advancedSearchList = document.getElementById("advancedSearchList");
+      const inputHistorySelect = document.getElementById("inputHistorySelect");
+      const restoreInputHistory = document.getElementById("restoreInputHistory");
+      const copyBtn = document.getElementById("copyBtn");
+
+      let sourceCode = "";
+      let outputCode = "";
+      let inputMode = "causelist";
+      let outputMode = "causelist";
+      let generatedScriptFilename = "order_data_generated_orders.js";
+      let generatedOrderCount = 0;
+      let loadedCauseDateKey = "";
+      let monthlyOutputs = [];
+      let activeMonthKey = "";
+      let monthlyManifestResources = {};
+      let monthlyReceivedDates = new Set();
+      let causeListPages = [];
+      let inputHistory = [];
+      let copyResetTimer = 0;
+      let lastDiscoveryAt = 0;
+      let causeListDirectoryHandle = null;
+      let folderWatchTimer = 0;
+      let lastFolderSignature = "";
+      let causeListLocalFiles = new Map();
+      let localProjectFiles = new Map();
+      let advancedSearchCache = new Map();
+      let smartSearchPdfLibrary = null;
+      let smartSearchInflateLibrary = null;
+      let pendingAdvancedSearch = "";
+      let rowFilterSelections = new Map();
+      let rowFilterTables = [];
+
+      function broadcastRealtimePreview(mode = "single") {
+        document.dispatchEvent(new CustomEvent("cause-list:preview-updated", {
+          detail: {
+            html: outputCode,
+            mode,
+            stats: {
+              inputSize: inputSizeStat.textContent,
+              retained: retainedCount.textContent,
+              removed: removedCount.textContent,
+              outputSize: outputSize.textContent,
+              date: causeListDateStat.textContent,
+              selectedRows: selectedRowCount.textContent
+            }
+          }
+        }));
+      }
+
+      document.addEventListener("cause-list:preview-remote", (event) => {
+        const detail = event.detail || {};
+        outputCode = typeof detail.html === "string" ? detail.html : "";
+        sourceOutput.value = outputCode;
+        inlinePreview.srcdoc = outputCode;
+        monthlyPreview.replaceChildren();
+        monthlyPreview.classList.add("hidden");
+        inlinePreview.classList.remove("hidden");
+        inlinePreview.classList.toggle("is-monthly", detail.mode === "monthly");
+        const stats = detail.stats || {};
+        if (stats.inputSize) inputSizeStat.textContent = stats.inputSize;
+        if (stats.retained) retainedCount.textContent = stats.retained;
+        if (stats.removed) removedCount.textContent = stats.removed;
+        if (stats.outputSize) outputSize.textContent = stats.outputSize;
+        if (stats.date) causeListDateStat.textContent = stats.date;
+        if (stats.selectedRows) selectedRowCount.textContent = stats.selectedRows;
+        outputReady.classList.toggle("hidden", !outputCode);
+        outputEmpty.classList.toggle("hidden", Boolean(outputCode));
+        clearBtn.disabled = !sourceCode.trim() && !outputCode;
+        outputStatus.textContent = outputCode ? "अर्को device बाट synced preview प्राप्त भयो।" : "";
+        outputStatus.className = outputCode ? "status success" : "status";
+      });
+      let advancedSearchRunId = 0;
+
+      function normalize(value) {
+        return String(value || "")
+          .normalize("NFC")
+          .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, "")
+          .replace(/[\s\u0964\u0965.,:;()\[\]{}\-_/'\"`]+/g, "")
+          .toLowerCase();
+      }
+
+      function isTarget(value) {
+        return normalize(value).includes(targetKey);
+      }
+
+      function isJudgeLabel(value) {
+        const compact = normalize(value);
+        return compact.includes(normalize("माननीय न्यायाधीश")) ||
+          compact.includes(normalize("माननीय जिल्ला न्यायाधीश"));
+      }
+
+      function cleanText(value) {
+        return String(value || "").replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\u00A0/g, " ").replace(/\s+/g, " ").trim();
+      }
+
+      function cleanJudgeName(value) {
+        return cleanText(value)
+          .replace(/^.*?माननीय\s+(?:जिल्ला\s+)?न्यायाधीश\s*/i, "")
+          .replace(/^श्री\s*/i, "")
+          .replace(/\s+(?:इजलास|इजलाश).*$/i, "")
+          .trim();
+      }
+
+      function toAsciiDigits(value) {
+        const nepali = "०१२३४५६७८९";
+        return String(value || "").replace(/[०-९]/g, (digit) => String(nepali.indexOf(digit)));
+      }
+
+      function normalizeBsDate(value) {
+        const compact = compactBsDate(value);
+        if (!compact) return "";
+        return toNepaliDigits(`${compact.slice(0, 4)}।${compact.slice(4, 6)}।${compact.slice(6, 8)}`);
+      }
+
+      function compactBsDate(value) {
+        const ascii = toAsciiDigits(value).trim();
+        let year;
+        let month;
+        let day;
+        const compact = ascii.replace(/\D/g, "");
+        if (/^\d{8}$/.test(compact)) {
+          year = compact.slice(0, 4);
+          month = compact.slice(4, 6);
+          day = compact.slice(6, 8);
+        } else {
+          const match = ascii.match(/(?:^|\D)(\d{4})[\s।./_-]+(\d{1,2})[\s।./_-]+(\d{1,2})(?:\D|$)/);
+          if (!match) return "";
+          year = match[1];
+          month = String(Number(match[2])).padStart(2, "0");
+          day = String(Number(match[3])).padStart(2, "0");
+        }
+        const monthNumber = Number(month);
+        const dayNumber = Number(day);
+        if (Number(year) < 1900 || monthNumber < 1 || monthNumber > 12 || dayNumber < 1 || dayNumber > 32) return "";
+        return `${year}${String(monthNumber).padStart(2, "0")}${String(dayNumber).padStart(2, "0")}`;
+      }
+
+      function causeListFilename(dateKey) {
+        return `index${dateKey}.html`;
+      }
+
+      function parseCauseListFilename(value) {
+        let filename = String(value || "").split(/[?#]/)[0].split(/[\\/]/).pop() || "";
+        try { filename = decodeURIComponent(filename); } catch (error) { /* filename is already decoded */ }
+        const match = filename.match(/^index(\d{8})\.html?$/i);
+        if (!match) return null;
+        const dateKey = match[1];
+        const monthNumber = Number(dateKey.slice(4, 6));
+        const dayNumber = Number(dateKey.slice(6, 8));
+        if (Number(dateKey.slice(0, 4)) < 1900 || monthNumber < 1 || monthNumber > 12 || dayNumber < 1 || dayNumber > 32) return null;
+        return {
+          dateKey,
+          monthKey: dateKey.slice(0, 6),
+          label: toNepaliDigits(`${dateKey.slice(0, 4)}।${dateKey.slice(4, 6)}।${dateKey.slice(6, 8)}`),
+          href: causeListFilename(dateKey)
+        };
+      }
+
+      function monthLabel(monthKey) {
+        const monthNumber = Number(String(monthKey).slice(4, 6));
+        const name = BS_MONTH_NAMES[monthNumber - 1] || "";
+        return toNepaliDigits(`${String(monthKey).slice(0, 4)}।${String(monthKey).slice(4, 6)}`) + (name ? ` — ${name}` : "");
+      }
+
+      function pagesForMonth(monthKey) {
+        return causeListPages.filter((item) => item.monthKey === monthKey);
+      }
+
+      function discoverFromMasterLinks() {
+        return Array.from(document.querySelectorAll("#causeListSiblingManifest a[data-cause-list-file][href]"))
+          .map((link) => parseCauseListFilename(link.getAttribute("href")))
+          .filter(Boolean);
+      }
+
+      function readCachedCauseListPages() {
+        try {
+          const names = JSON.parse(localStorage.getItem(CAUSE_LIST_CACHE_KEY) || "[]");
+          return Array.isArray(names) ? names.map(parseCauseListFilename).filter(Boolean) : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function cacheCauseListPages(pages) {
+        try {
+          localStorage.setItem(CAUSE_LIST_CACHE_KEY, JSON.stringify(pages.map((item) => item.href)));
+        } catch (error) {
+          /* Some file:// browsers disable localStorage. The current scan still works. */
+        }
+      }
+
+      function setCauseListPages(pages, shouldCache) {
+        const unique = new Map();
+        (pages || []).forEach((item) => {
+          const parsed = item && item.dateKey ? parseCauseListFilename(item.href || causeListFilename(item.dateKey)) : parseCauseListFilename(item);
+          if (parsed) unique.set(parsed.dateKey, parsed);
+        });
+        causeListPages = Array.from(unique.values()).sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+        if (shouldCache && causeListPages.length) cacheCauseListPages(causeListPages);
+
+        const previousMonth = causeMonthSelect.value;
+        const monthKeys = Array.from(new Set(causeListPages.map((item) => item.monthKey))).sort();
+        causeMonthSelect.replaceChildren();
+        const prompt = document.createElement("option");
+        prompt.value = "";
+        prompt.textContent = monthKeys.length ? "महिना रोज्नुहोस्" : "फाइल स्वतः खोज्नुहोस्";
+        causeMonthSelect.appendChild(prompt);
+        monthKeys.forEach((monthKey) => {
+          const option = document.createElement("option");
+          option.value = monthKey;
+          option.textContent = monthLabel(monthKey);
+          causeMonthSelect.appendChild(option);
+        });
+        causeMonthSelect.disabled = !monthKeys.length;
+        if (monthKeys.includes(previousMonth)) causeMonthSelect.value = previousMonth;
+        scanCauseFolder.textContent = causeListDirectoryHandle
+          ? "✓ Folder auto-sync"
+          : (causeListPages.length ? "Folder auto-sync (optional)" : "फाइल स्वतः खोज्नुहोस्");
+        updateRibbonDates();
+      }
+
+      function showFolderScanButton(show) {
+        scanCauseFolder.classList.toggle("is-visible", Boolean(show));
+      }
+
+      async function discoverFromGeneratedManifest() {
+        if (!/^https?:$/.test(location.protocol)) return [];
+        try {
+          const manifestUrl = new URL("cause-list-files.js", new URL(".", location.href));
+          manifestUrl.searchParams.set("v", String(Date.now()));
+          const response = await fetch(manifestUrl, {cache:"no-store"});
+          if (!response.ok) return [];
+          const names = await response.json();
+          return Array.isArray(names) ? names.map(parseCauseListFilename).filter(Boolean) : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      async function discoverFromDirectoryListing() {
+        if (!/^https?:$/.test(location.protocol)) return [];
+        try {
+          const response = await fetch(new URL(".", location.href), {cache:"no-store"});
+          if (!response.ok) return [];
+          const html = await response.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          return Array.from(doc.querySelectorAll("a[href]"))
+            .map((anchor) => parseCauseListFilename(anchor.getAttribute("href")))
+            .filter(Boolean);
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function githubContentsApiUrls() {
+        if (!/\.github\.io$/i.test(location.hostname)) return [];
+        const owner = location.hostname.split(".")[0];
+        const segments = location.pathname.split("/").filter(Boolean);
+        if (segments.length && /\.html?$/i.test(segments[segments.length - 1])) segments.pop();
+        const candidates = [];
+        if (segments.length) {
+          const projectSegments = segments.slice();
+          const repo = projectSegments.shift();
+          candidates.push({repo, path:projectSegments.join("/")});
+        }
+        candidates.push({repo:owner + ".github.io", path:segments.join("/")});
+        return candidates
+          .filter((item, index, list) => list.findIndex((entry) => entry.repo === item.repo && entry.path === item.path) === index)
+          .map((item) => `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(item.repo)}/contents/${item.path}`);
+      }
+
+      async function discoverFromGithub() {
+        for (const apiUrl of githubContentsApiUrls()) {
+          try {
+            const response = await fetch(apiUrl, {headers:{Accept:"application/vnd.github+json"}, cache:"no-store"});
+            if (!response.ok) continue;
+            const entries = await response.json();
+            if (!Array.isArray(entries)) continue;
+            const pages = entries
+              .filter((entry) => entry && entry.type === "file")
+              .map((entry) => parseCauseListFilename(entry.name))
+              .filter(Boolean);
+            if (pages.length) return pages;
+          } catch (error) {
+            /* Try the next GitHub Pages repository/path candidate. */
+          }
+        }
+        return [];
+      }
+
+      function openFolderHandleDb() {
+        return new Promise((resolve) => {
+          if (!window.indexedDB) return resolve(null);
+          try {
+            const request = indexedDB.open("cause-list-folder-db", 1);
+            request.onupgradeneeded = () => request.result.createObjectStore("handles");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => resolve(null);
+          } catch (error) {
+            resolve(null);
+          }
+        });
+      }
+
+      async function rememberFolderHandle(handle) {
+        const db = await openFolderHandleDb();
+        if (!db) return;
+        try {
+          const transaction = db.transaction("handles", "readwrite");
+          transaction.objectStore("handles").put(handle, "cause-list-folder");
+        } catch (error) { /* The current handle still works in memory. */ }
+      }
+
+      async function recallFolderHandle() {
+        const db = await openFolderHandleDb();
+        if (!db) return null;
+        return new Promise((resolve) => {
+          try {
+            const request = db.transaction("handles", "readonly").objectStore("handles").get("cause-list-folder");
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = () => resolve(null);
+          } catch (error) {
+            resolve(null);
+          }
+        });
+      }
+
+      async function folderPermission(handle, requestAccess) {
+        if (!handle || typeof handle.queryPermission !== "function") return Boolean(handle);
+        let state = await handle.queryPermission({mode:"read"});
+        if (state === "prompt" && requestAccess && typeof handle.requestPermission === "function") {
+          state = await handle.requestPermission({mode:"read"});
+        }
+        return state === "granted";
+      }
+
+      async function scanFolderHandle(handle, announce) {
+        if (!await folderPermission(handle, false)) return false;
+        const names = [];
+        try {
+          for await (const entry of handle.values()) {
+            if (entry && entry.kind === "file") names.push(entry.name);
+          }
+        } catch (error) {
+          if (announce) showInputError("Folder पढ्न सकिएन। पुनः अनुमति दिनुहोस्।");
+          return false;
+        }
+        const pages = names.map(parseCauseListFilename).filter(Boolean);
+        if (!pages.length) {
+          if (announce) showInputError("छानिएको folder मा indexYYYYMMDD.html फाइल भेटिएन।");
+          return false;
+        }
+        const signature = pages.map((item) => item.href).sort().join("|");
+        if (signature !== lastFolderSignature) {
+          lastFolderSignature = signature;
+          setCauseListPages(pages, true);
+        }
+        scanCauseFolder.textContent = "✓ Folder auto-sync";
+        showFolderScanButton(true);
+        if (announce) {
+          inputStatus.textContent = toNepaliDigits(pages.length) + " वटा पेशी सूची भेटिए। नयाँ file थपिँदा dropdown स्वतः update हुन्छ।";
+          inputStatus.className = "status success";
+        }
+        return true;
+      }
+
+      function watchFolderHandle() {
+        clearInterval(folderWatchTimer);
+        if (!causeListDirectoryHandle) return;
+        folderWatchTimer = setInterval(() => {
+          if (document.visibilityState === "visible") scanFolderHandle(causeListDirectoryHandle, false);
+        }, 4000);
+      }
+
+      async function chooseCauseListFolder() {
+        if (typeof window.showDirectoryPicker === "function") {
+          try {
+            const handle = await window.showDirectoryPicker({mode:"read"});
+            if (!await folderPermission(handle, true)) return false;
+            causeListDirectoryHandle = handle;
+            await rememberFolderHandle(handle);
+            const ready = await scanFolderHandle(handle, true);
+            if (ready) watchFolderHandle();
+            return ready;
+          } catch (error) {
+            if (error && error.name === "AbortError") return false;
+          }
+        }
+        causeFolderInput.value = "";
+        causeFolderInput.click();
+        return null;
+      }
+
+      async function refreshCauseListDiscovery(force) {
+        if (location.protocol === "file:") {
+          if (causeListDirectoryHandle) await scanFolderHandle(causeListDirectoryHandle, false);
+          showFolderScanButton(true);
+          return;
+        }
+        if (!force && Date.now() - lastDiscoveryAt < 30000) return;
+        lastDiscoveryAt = Date.now();
+        let discovered = await discoverFromGeneratedManifest();
+        if (!discovered.length) {
+          const [listing, github] = await Promise.all([discoverFromDirectoryListing(), discoverFromGithub()]);
+          discovered = [...listing, ...github];
+        }
+        if (discovered.length) {
+          setCauseListPages(discovered, true);
+          showFolderScanButton(false);
+          return;
+        }
+        showFolderScanButton(!causeListPages.length);
+      }
+
+      async function initializeCauseListDiscovery() {
+        const linked = discoverFromMasterLinks();
+        const cached = readCachedCauseListPages();
+        if (linked.length) setCauseListPages(linked, true);
+        else if (cached.length) setCauseListPages(cached, false);
+        else setCauseListPages([], false);
+        if (location.protocol === "file:") {
+          causeListDirectoryHandle = await recallFolderHandle();
+          if (causeListDirectoryHandle && await scanFolderHandle(causeListDirectoryHandle, false)) watchFolderHandle();
+          showFolderScanButton(true);
+          return;
+        }
+        await refreshCauseListDiscovery(true);
+        if (/^https?:$/.test(location.protocol)) {
+          setInterval(() => {
+            if (document.visibilityState === "visible") refreshCauseListDiscovery(false);
+          }, 120000);
+          window.addEventListener("focus", () => refreshCauseListDiscovery(false));
+        }
+      }
+
+      function normalizeProjectPath(value) {
+        return String(value || "").replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\/+|\/+$/g, "");
+      }
+
+      function projectPathForSelectedFile(file) {
+        const relative = normalizeProjectPath(file && file.webkitRelativePath);
+        if (!relative) return normalizeProjectPath(file && file.name);
+        const parts = relative.split("/");
+        return normalizeProjectPath(parts.length > 1 ? parts.slice(1).join("/") : relative);
+      }
+
+      function scanSelectedFolder(files) {
+        causeListLocalFiles = new Map();
+        localProjectFiles = new Map();
+        const discovered = Array.from(files || []).map((file) => {
+          const projectPath = projectPathForSelectedFile(file);
+          if (projectPath) localProjectFiles.set(projectPath, file);
+          const basename = normalizeProjectPath(file && file.name);
+          if (basename && !localProjectFiles.has(basename)) localProjectFiles.set(basename, file);
+          const parsed = parseCauseListFilename(file && (file.name || file.webkitRelativePath));
+          if (parsed) causeListLocalFiles.set(parsed.href, file);
+          return parsed;
+        }).filter(Boolean);
+        if (!discovered.length) {
+          showInputError("छानिएको folder मा indexYYYYMMDD.html फाइल भेटिएन।");
+          return;
+        }
+        setCauseListPages(discovered, true);
+        showFolderScanButton(location.protocol === "file:");
+        scanCauseFolder.textContent = "Folder refresh";
+        inputStatus.textContent = toNepaliDigits(discovered.length) + " वटा पेशी सूची भेटिए। नयाँ file पछि Folder refresh थिच्नुहोस्।";
+        inputStatus.className = "status success";
+        if (pendingAdvancedSearch) {
+          const query = pendingAdvancedSearch;
+          pendingAdvancedSearch = "";
+          advancedSearchInput.value = query;
+          runAdvancedSearch(query);
+        }
+      }
+
+      function openAdvancedSearchPanel(message) {
+        advancedSearchResults.hidden = false;
+        advancedSearchClear.classList.add("is-visible");
+        advancedSearchStatus.textContent = message;
+      }
+
+      function closeAdvancedSearchPanel(clearQuery) {
+        advancedSearchRunId += 1;
+        pendingAdvancedSearch = "";
+        advancedSearchResults.hidden = true;
+        advancedSearchClear.classList.remove("is-visible");
+        advancedSearchList.replaceChildren();
+        advancedSearchStatus.textContent = "";
+        advancedSearchBtn.disabled = false;
+        if (clearQuery) advancedSearchInput.value = "";
+      }
+
+      async function ensureAdvancedSearchAccess(query) {
+        if (location.protocol !== "file:") return true;
+        if (causeListLocalFiles.size) return true;
+        if (causeListDirectoryHandle && await folderPermission(causeListDirectoryHandle, true)) {
+          await scanFolderHandle(causeListDirectoryHandle, false);
+          return true;
+        }
+
+        pendingAdvancedSearch = query;
+        openAdvancedSearchPanel("स्थानीय पेशी सूची पढ्न folder छान्नुहोस्…");
+        const state = await chooseCauseListFolder();
+        if (state === true) {
+          pendingAdvancedSearch = "";
+          return true;
+        }
+        if (state === false) {
+          pendingAdvancedSearch = "";
+          openAdvancedSearchPanel("Folder नछानिएकाले खोजी चलाइएन।");
+        }
+        return false;
+      }
+
+      async function readCauseListPage(item) {
+        if (advancedSearchCache.has(item.href)) return advancedSearchCache.get(item.href);
+        let source = "";
+        if (location.protocol === "file:") {
+          const localFile = causeListLocalFiles.get(item.href);
+          if (localFile && typeof localFile.text === "function") {
+            source = await localFile.text();
+          } else if (causeListDirectoryHandle && typeof causeListDirectoryHandle.getFileHandle === "function") {
+            const fileHandle = await causeListDirectoryHandle.getFileHandle(item.href);
+            const file = await fileHandle.getFile();
+            source = await file.text();
+          } else {
+            throw new Error("Local file access is unavailable");
+          }
+        } else {
+          const response = await fetch(new URL(item.href, location.href), {cache:"no-store"});
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          source = await response.text();
+        }
+        advancedSearchCache.set(item.href, source);
+        return source;
+      }
+
+      async function fileFromDirectoryPath(path) {
+        const parts = normalizeProjectPath(path).split("/").filter(Boolean);
+        if (!parts.length || !causeListDirectoryHandle) throw new Error("Invalid local attachment path");
+        let directory = causeListDirectoryHandle;
+        for (let index = 0; index < parts.length - 1; index += 1) {
+          directory = await directory.getDirectoryHandle(parts[index]);
+        }
+        const handle = await directory.getFileHandle(parts[parts.length - 1]);
+        return handle.getFile();
+      }
+
+      async function fileArrayBuffer(file) {
+        if (file && typeof file.arrayBuffer === "function") return file.arrayBuffer();
+        if (file && typeof file.text === "function") return new TextEncoder().encode(await file.text()).buffer;
+        throw new Error("File bytes are unavailable");
+      }
+
+      async function readProjectFile(path) {
+        const normalizedPath = normalizeProjectPath(path);
+        if (!normalizedPath || normalizedPath.includes("..")) throw new Error("Invalid attachment path");
+        if (location.protocol === "file:") {
+          const selectedFile = localProjectFiles.get(normalizedPath);
+          const file = selectedFile || await fileFromDirectoryPath(normalizedPath);
+          return fileArrayBuffer(file);
+        }
+        const response = await fetch(new URL(normalizedPath, location.href), {cache:"no-store"});
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        if (typeof response.arrayBuffer === "function") return response.arrayBuffer();
+        return new TextEncoder().encode(await response.text()).buffer;
+      }
+
+      async function readProjectText(path) {
+        return new TextDecoder("utf-8").decode(await readProjectFile(path)).replace(/^\uFEFF/, "");
+      }
+
+      function zipDirectoryEntries(buffer) {
+        const bytes = new Uint8Array(buffer);
+        const view = new DataView(buffer);
+        let end = -1;
+        const minimum = Math.max(0, bytes.length - 65557);
+        for (let offset = bytes.length - 22; offset >= minimum; offset -= 1) {
+          if (view.getUint32(offset, true) === 0x06054b50) {
+            end = offset;
+            break;
+          }
+        }
+        if (end < 0) throw new Error("ZIP directory भेटिएन");
+        const count = view.getUint16(end + 10, true);
+        let offset = view.getUint32(end + 16, true);
+        const decoder = new TextDecoder("utf-8");
+        const entries = [];
+        for (let index = 0; index < count; index += 1) {
+          if (view.getUint32(offset, true) !== 0x02014b50) throw new Error("ZIP entry invalid छ");
+          const nameLength = view.getUint16(offset + 28, true);
+          const extraLength = view.getUint16(offset + 30, true);
+          const commentLength = view.getUint16(offset + 32, true);
+          entries.push({
+            name: decoder.decode(bytes.slice(offset + 46, offset + 46 + nameLength)),
+            method: view.getUint16(offset + 10, true),
+            compressedSize: view.getUint32(offset + 20, true),
+            localOffset: view.getUint32(offset + 42, true)
+          });
+          offset += 46 + nameLength + extraLength + commentLength;
+        }
+        return entries;
+      }
+
+      async function inflateZipBytes(bytes) {
+        if (typeof window.DecompressionStream === "function") {
+          const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+          return new Uint8Array(await new Response(stream).arrayBuffer());
+        }
+        smartSearchInflateLibrary ||= import("https://cdn.jsdelivr.net/npm/fflate@0.8.2/esm/browser.js");
+        return (await smartSearchInflateLibrary).inflateSync(bytes);
+      }
+
+      async function readZipEntry(buffer, entry) {
+        const view = new DataView(buffer);
+        const bytes = new Uint8Array(buffer);
+        if (view.getUint32(entry.localOffset, true) !== 0x04034b50) throw new Error("ZIP local entry invalid छ");
+        const nameLength = view.getUint16(entry.localOffset + 26, true);
+        const extraLength = view.getUint16(entry.localOffset + 28, true);
+        const start = entry.localOffset + 30 + nameLength + extraLength;
+        const compressed = bytes.slice(start, start + entry.compressedSize);
+        if (entry.method === 0) return compressed;
+        if (entry.method === 8) return inflateZipBytes(compressed);
+        throw new Error("Unsupported ZIP compression");
+      }
+
+      async function extractDocxText(buffer) {
+        const entries = zipDirectoryEntries(buffer).filter((entry) =>
+          /^word\/(?:document|footnotes|endnotes|header\d+|footer\d+)\.xml$/i.test(entry.name)
+        );
+        if (!entries.length) throw new Error("DOCX text भेटिएन");
+        const parts = [];
+        for (const entry of entries) {
+          const xml = new TextDecoder("utf-8").decode(await readZipEntry(buffer, entry));
+          const doc = new DOMParser().parseFromString(xml, "application/xml");
+          const paragraphs = Array.from(doc.getElementsByTagName("*")).filter((node) => node.localName === "p");
+          paragraphs.forEach((paragraph) => {
+            const line = Array.from(paragraph.getElementsByTagName("*")).map((node) => {
+              if (node.localName === "t") return node.textContent || "";
+              if (node.localName === "tab") return "\t";
+              if (node.localName === "br") return "\n";
+              return "";
+            }).join("");
+            if (line.trim()) parts.push(line);
+          });
+        }
+        return parts.join("\n");
+      }
+
+      async function extractPdfText(buffer) {
+        smartSearchPdfLibrary ||= new Promise((resolve, reject) => {
+          const finish = () => {
+            if (!window.pdfjsLib) {
+              reject(new Error("PDF parser load हुन सकेन"));
+              return;
+            }
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("pdf.worker.min.js", location.href).href;
+            resolve(window.pdfjsLib);
+          };
+          if (window.pdfjsLib) {
+            finish();
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = new URL("pdf.min.js", location.href).href;
+          script.onload = finish;
+          script.onerror = () => reject(new Error("pdf.min.js भेटिएन"));
+          document.head.appendChild(script);
+        });
+        const library = await smartSearchPdfLibrary;
+        const pdf = await library.getDocument({data:new Uint8Array(buffer)}).promise;
+        const pages = [];
+        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+          const page = await pdf.getPage(pageNumber);
+          const content = await page.getTextContent();
+          pages.push(content.items.map((item) => item.str || "").join(" "));
+        }
+        return pages.join("\n");
+      }
+
+      function extractRtfText(source) {
+        return String(source || "")
+          .replace(/\\u(-?\d+)\??/g, (_, value) => String.fromCharCode(Number(value) < 0 ? Number(value) + 65536 : Number(value)))
+          .replace(/\\par[d]?\b/g, "\n")
+          .replace(/\\'[0-9a-f]{2}/gi, " ")
+          .replace(/\\[a-z]+-?\d* ?/gi, "")
+          .replace(/[{}]/g, "");
+      }
+
+      async function extractAttachmentText(resource, buffer) {
+        const path = resource.path;
+        const extension = (path.match(/\.([a-z0-9]+)(?:[?#]|$)/i) || [])[1]?.toLowerCase() || "";
+        if (extension === "docx") return extractDocxText(buffer);
+        if (extension === "pdf") return extractPdfText(buffer);
+        const source = new TextDecoder("utf-8").decode(buffer).replace(/^\uFEFF/, "");
+        if (["html", "htm", "xml"].includes(extension)) {
+          const doc = new DOMParser().parseFromString(source, extension === "xml" ? "application/xml" : "text/html");
+          return doc.documentElement ? doc.documentElement.textContent || "" : source;
+        }
+        if (extension === "rtf") return extractRtfText(source);
+        if (["txt", "md", "csv", "json"].includes(extension)) return source;
+        throw new Error("Unsupported attachment type");
+      }
+
+      async function smartSearchResources() {
+        const manifest = JSON.parse(await readProjectText("order/index.json"));
+        const resources = manifest && manifest.resources ? manifest.resources : manifest;
+        if (!resources || typeof resources !== "object") return [];
+        const found = [];
+        const seen = new Set();
+        Object.entries(resources).forEach(([stem, entries]) => {
+          (Array.isArray(entries) ? entries : [entries]).forEach((entry) => {
+            const rawPath = typeof entry === "string" ? entry : entry && (entry.path || entry.file || entry.name || entry.href);
+            const path = normalizeProjectPath(rawPath);
+            if (!path || seen.has(path) || /^https?:\/\//i.test(rawPath || "")) return;
+            seen.add(path);
+            const dateMatch = String(stem).match(/\d{8}/) || path.match(/(?:^|\/)(\d{8})(?:\/|\.)/);
+            found.push({
+              path,
+              href:path,
+              dateKey:dateMatch ? (dateMatch[1] || dateMatch[0]) : "Attachment",
+              attachmentLabel:cleanText(entry && entry.label) || path.split("/").pop() || path
+            });
+          });
+        });
+        return found;
+      }
+
+      function findAdvancedSearchMatch(query, text, useNormalizer) {
+        const queryText = String(query).normalize("NFC").toLocaleLowerCase();
+        const sourceText = String(text).normalize("NFC").toLocaleLowerCase();
+        if (useNormalizer) return NepaliNormalizer.search(queryText, sourceText)[0] || null;
+        const start = sourceText.indexOf(queryText);
+        return start < 0 ? null : {start, end:start + queryText.length};
+      }
+
+      function searchCauseListSource(item, source, query, useNormalizer) {
+        const doc = new DOMParser().parseFromString(source, "text/html");
+        const rows = Array.from(doc.querySelectorAll("tr")).filter((row) => row.querySelector("td"));
+        const found = [];
+        const seen = new Set();
+        rows.forEach((row, rowIndex) => {
+          const text = cleanText(row.textContent);
+          if (!text || seen.has(text)) return;
+          const match = findAdvancedSearchMatch(query, text, useNormalizer);
+          if (!match) return;
+          seen.add(text);
+          found.push({item, rowIndex, text, match});
+        });
+        return found;
+      }
+
+      function appendSearchSnippet(container, text, match) {
+        const before = 82;
+        const after = 175;
+        const clipStart = Math.max(0, match.start - before);
+        const clipEnd = Math.min(text.length, match.end + after);
+        if (clipStart) container.appendChild(document.createTextNode("… "));
+        container.appendChild(document.createTextNode(text.slice(clipStart, match.start)));
+        const mark = document.createElement("mark");
+        mark.textContent = text.slice(match.start, match.end);
+        container.appendChild(mark);
+        container.appendChild(document.createTextNode(text.slice(match.end, clipEnd)));
+        if (clipEnd < text.length) container.appendChild(document.createTextNode(" …"));
+      }
+
+      function renderAdvancedSearchResults(matches, failedPages, totalPages, smartMode = false) {
+        advancedSearchList.replaceChildren();
+        const limited = matches.slice(0, 250);
+        limited.forEach((result) => {
+          const row = document.createElement("li");
+          row.className = "advanced-search-result";
+          const link = document.createElement("a");
+          link.href = result.item.href;
+          link.title = result.item.href + " खोल्नुहोस्";
+          if (result.item.attachmentLabel) {
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+          }
+          const date = document.createElement("span");
+          date.className = "advanced-search-date";
+          date.textContent = result.item.attachmentLabel
+            ? result.item.dateKey + " · " + result.item.attachmentLabel
+            : result.item.dateKey;
+          const snippet = document.createElement("span");
+          snippet.className = "advanced-search-snippet";
+          appendSearchSnippet(snippet, result.text, result.match);
+          link.append(date, snippet);
+          row.appendChild(link);
+          advancedSearchList.appendChild(row);
+        });
+
+        const sourceLabel = smartMode ? " संलग्न फाइलको content खोजियो" : " पेशी सूची खोजियो";
+        let status = toNepaliDigits(matches.length) + " नतिजा · " + toNepaliDigits(totalPages) + sourceLabel;
+        if (matches.length > limited.length) status += " · पहिलो " + toNepaliDigits(limited.length) + " देखाइएको";
+        if (failedPages) status += " · " + toNepaliDigits(failedPages) + " फाइल पढ्न सकिएन";
+        openAdvancedSearchPanel(status);
+      }
+
+      async function runSmartAttachmentSearch(query, useNormalizer, runId) {
+        let resources;
+        try {
+          resources = (await smartSearchResources()).sort((a, b) =>
+            a.dateKey.localeCompare(b.dateKey) || a.path.localeCompare(b.path)
+          );
+        } catch (error) {
+          if (runId !== advancedSearchRunId) return;
+          advancedSearchBtn.disabled = false;
+          openAdvancedSearchPanel("order/index.json पढ्न सकिएन। Attachment paths जाँच्नुहोस्।");
+          return;
+        }
+
+        if (!resources.length) {
+          if (runId !== advancedSearchRunId) return;
+          advancedSearchBtn.disabled = false;
+          renderAdvancedSearchResults([], 0, 0, true);
+          return;
+        }
+
+        const matches = [];
+        let failedFiles = 0;
+        let completedFiles = 0;
+        const queue = resources.slice();
+        openAdvancedSearchPanel("Attachment content खोजिँदैछ… ०/" + toNepaliDigits(resources.length));
+
+        async function worker() {
+          while (queue.length && runId === advancedSearchRunId) {
+            const item = queue.shift();
+            try {
+              const buffer = await readProjectFile(item.path);
+              const text = cleanText(await extractAttachmentText(item, buffer));
+              const match = findAdvancedSearchMatch(query, text, useNormalizer);
+              if (match) matches.push({item, rowIndex:0, text, match});
+            } catch (error) {
+              failedFiles += 1;
+            }
+            completedFiles += 1;
+            advancedSearchStatus.textContent = "Attachment content खोजिँदैछ… " +
+              toNepaliDigits(completedFiles) + "/" + toNepaliDigits(resources.length);
+          }
+        }
+
+        await Promise.all(Array.from({length:Math.min(4, resources.length)}, () => worker()));
+        if (runId !== advancedSearchRunId) return;
+        matches.sort((a, b) => a.item.dateKey.localeCompare(b.item.dateKey) || a.item.path.localeCompare(b.item.path));
+        advancedSearchBtn.disabled = false;
+        renderAdvancedSearchResults(matches, failedFiles, resources.length, true);
+      }
+
+      async function runAdvancedSearch(value) {
+        const smartMode = smartSearchToggle.checked;
+        const query = cleanText(value === undefined ? advancedSearchInput.value : value);
+        advancedSearchInput.value = query;
+        if (!query) {
+          openAdvancedSearchPanel(smartMode
+            ? "Attachment content खोज्न शब्द लेख्नुहोस्।"
+            : "खोज्न नाम, मुद्दा नं., पक्ष वा विषय लेख्नुहोस्।");
+          advancedSearchInput.focus();
+          return;
+        }
+        if (!smartMode && !causeListPages.length) {
+          openAdvancedSearchPanel("खोज्न मिल्ने indexYYYYMMDD.html फाइल भेटिएन।");
+          return;
+        }
+        if (!await ensureAdvancedSearchAccess(query)) return;
+
+        const runId = ++advancedSearchRunId;
+        const useNormalizer = nepaliNormalizerToggle.checked;
+        const pages = causeListPages.slice().sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+        const matches = [];
+        let failedPages = 0;
+        let completedPages = 0;
+        advancedSearchCache = new Map();
+        advancedSearchList.replaceChildren();
+        advancedSearchBtn.disabled = true;
+        if (smartMode) {
+          await runSmartAttachmentSearch(query, useNormalizer, runId);
+          return;
+        }
+        openAdvancedSearchPanel("खोजिँदैछ… ०/" + toNepaliDigits(pages.length));
+
+        const queue = pages.slice();
+        async function worker() {
+          while (queue.length && runId === advancedSearchRunId) {
+            const item = queue.shift();
+            try {
+              const source = await readCauseListPage(item);
+              matches.push(...searchCauseListSource(item, source, query, useNormalizer));
+            } catch (error) {
+              failedPages += 1;
+            }
+            completedPages += 1;
+            advancedSearchStatus.textContent = "खोजिँदैछ… " + toNepaliDigits(completedPages) + "/" + toNepaliDigits(pages.length);
+          }
+        }
+
+        const workers = Array.from({length:Math.min(4, pages.length)}, () => worker());
+        await Promise.all(workers);
+        if (runId !== advancedSearchRunId) return;
+        matches.sort((a, b) => a.item.dateKey.localeCompare(b.item.dateKey) || a.rowIndex - b.rowIndex);
+        advancedSearchBtn.disabled = false;
+        renderAdvancedSearchResults(matches, failedPages, pages.length);
+      }
+
+      function updateRibbonDates() {
+        const dates = pagesForMonth(causeMonthSelect.value);
+        causeRibbonDateSelect.replaceChildren();
+        const prompt = document.createElement("option");
+        prompt.value = "";
+        prompt.textContent = dates.length ? "मिति रोज्नुहोस्" : "पहिला महिना रोज्नुहोस्";
+        causeRibbonDateSelect.appendChild(prompt);
+        if (dates.length) {
+          const allOption = document.createElement("option");
+          const files = dates.map((item) => item.dateKey).join(",");
+          allOption.value = "month.html?month=" + encodeURIComponent(causeMonthSelect.value) + "&files=" + encodeURIComponent(files);
+          allOption.textContent = "ALL — महिनाका सबै पेशी सूची";
+          causeRibbonDateSelect.appendChild(allOption);
+        }
+        dates.forEach((item) => {
+          const option = document.createElement("option");
+          option.value = item.href;
+          option.textContent = item.dateKey;
+          causeRibbonDateSelect.appendChild(option);
+        });
+        causeRibbonDateSelect.disabled = !dates.length;
+      }
+
+      function openRibbonCauseList() {
+        if (!causeRibbonDateSelect.value) return;
+        window.location.href = causeRibbonDateSelect.value;
+      }
+
+      function escapeAttribute(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function buildMonthlyDocument(outputs, monthKey) {
+        const monthLabel = causeMonthSelect.options[causeMonthSelect.selectedIndex]
+          ? causeMonthSelect.options[causeMonthSelect.selectedIndex].textContent
+          : monthKey;
+        const sections = outputs.map((item) =>
+          '\x3Csection class="month-item">\x3Ch2>' + escapeAttribute(item.label) + '\x3C/h2>' +
+          '\x3Ciframe title="' + escapeAttribute(item.label) + ' को पेशी सूची" src="' + escapeAttribute(item.href) + '">\x3C/iframe>\x3C/section>'
+        ).join("");
+        return '\x3C!doctype html>\x3Chtml lang="ne">\x3Chead>\x3Cmeta charset="utf-8">\x3Cmeta name="viewport" content="width=device-width,initial-scale=1">' +
+          '\x3Ctitle>' + escapeAttribute(monthLabel) + ' — सबै पेशी सूची\x3C/title>\x3Clink rel="stylesheet" href="cause-list-ribbon.css">\x3Cstyle>' +
+          'html{color:#2f2724;background:#f4efe8;font-family:"Noto Sans Devanagari","Nirmala UI",sans-serif}body{margin:0;padding:18px}' +
+          'header{position:relative;z-index:5;margin:-18px -18px 18px;padding:14px 20px;color:#fff;background:#5f1723;border-bottom:3px solid #c59132}' +
+          'header h1{margin:0;font-size:1.12rem}.month-item{margin:0 0 22px;padding:12px;background:#fff;border:1px solid #d5cabe;border-radius:12px;box-shadow:0 8px 24px rgba(56,35,30,.08)}' +
+          '.month-item h2{margin:0 0 10px;color:#6d1a27;font-size:1rem}.month-item iframe{display:block;width:100%;height:1450px;border:1px solid #d5cabe;border-radius:8px;background:#fff}' +
+          '@media(max-width:700px){body{padding:8px}header{margin:-8px -8px 12px}.month-item{padding:7px}.month-item iframe{height:1100px}}' +
+          '\x3C/style>\x3C/head>\x3Cbody>\x3Cheader>\x3Ch1>' + escapeAttribute(monthLabel) + ' — सबै उपलब्ध पेशी सूची\x3C/h1>\x3C/header>' + sections + '\x3Cscript src="cause-list-ribbon.js">\x3C/script>\x3C/body>\x3C/html>';
+      }
+
+      function renderMonthlyPreview(outputs) {
+        monthlyPreview.replaceChildren();
+        outputs.forEach((item) => {
+          const section = document.createElement("section");
+          section.className = "monthly-preview-item";
+          section.dataset.dateKey = item.dateKey;
+          const title = document.createElement("h4");
+          title.textContent = item.label;
+          const frame = document.createElement("iframe");
+          frame.title = item.label + " को पेशी सूची";
+          frame.src = item.href;
+          frame.setAttribute("loading", "eager");
+          section.appendChild(title);
+          section.appendChild(frame);
+          monthlyPreview.appendChild(section);
+        });
+        inlinePreview.srcdoc = "";
+        inlinePreview.classList.add("hidden");
+        inlinePreview.classList.remove("is-monthly");
+        monthlyPreview.classList.remove("hidden");
+      }
+
+      function loadMonthCauseLists() {
+        const monthKey = causeMonthSelect.value;
+        const dates = pagesForMonth(monthKey);
+        if (!dates.length) return;
+        monthlyOutputs = dates.map((item) => ({ dateKey:item.dateKey, label:item.label, href:item.href }));
+        monthlyManifestResources = {};
+        monthlyReceivedDates = new Set();
+        activeMonthKey = monthKey;
+        loadedCauseDateKey = "";
+        outputCode = buildMonthlyDocument(monthlyOutputs, monthKey);
+        sourceOutput.value = outputCode;
+        retainedCount.textContent = toNepaliDigits(monthlyOutputs.length);
+        removedCount.textContent = "०";
+        inputSizeStat.textContent = "—";
+        outputSize.textContent = formatBytes(new Blob([outputCode]).size);
+        causeListDateStat.textContent = toNepaliDigits(monthKey.slice(0, 4) + "।" + monthKey.slice(4, 6)) + " — ALL";
+        selectedRowCount.textContent = "ALL";
+        outputEmpty.classList.add("hidden");
+        outputReady.classList.remove("hidden");
+        renderMonthlyPreview(monthlyOutputs);
+        clearBtn.disabled = false;
+        inputStatus.textContent = toNepaliDigits(monthlyOutputs.length) + " वटा पेशी सूची खोलिँदैछन्।";
+        inputStatus.className = "status success";
+        outputStatus.textContent = "महिनाका सबै उपलब्ध पेशी सूची एकैचोटि देखाइएका छन्। Rows प्राप्त भएपछि Download .json ले सबैको एउटै index.json तयार गर्छ।";
+        outputStatus.className = "status success";
+        broadcastRealtimePreview("monthly");
+        if (typeof outputReady.scrollIntoView === "function") outputReady.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function handleMonthlyManifestMessage(event) {
+        const data = event.data;
+        if (!data || data.type !== "cob-month-manifest" || !monthlyOutputs.length) return;
+        const dateKey = compactBsDate(data.dateKey);
+        const item = monthlyOutputs.find((entry) => entry.dateKey === dateKey);
+        if (!item) return;
+        const section = Array.from(monthlyPreview.querySelectorAll(".monthly-preview-item"))
+          .find((node) => node.dataset.dateKey === dateKey);
+        const frame = section && section.querySelector("iframe");
+        if (!frame || (event.source && event.source !== frame.contentWindow)) return;
+        const stems = Array.isArray(data.stems) ? data.stems : [];
+        stems.forEach((stem) => {
+          const value = String(stem || "");
+          if (!new RegExp("^" + dateKey + "\\.\\d{2}\\.\\d{2}\\.[a-z0-9]+-\\d+$", "i").test(value)) return;
+          const filename = value + ".txt";
+          monthlyManifestResources[value] = [{
+            type: "file",
+            path: "order/" + dateKey + "/" + filename,
+            label: filename
+          }];
+        });
+        monthlyReceivedDates.add(dateKey);
+        const rowCount = Object.keys(monthlyManifestResources).length;
+        inputStatus.textContent = toNepaliDigits(monthlyReceivedDates.size) + "/" + toNepaliDigits(monthlyOutputs.length) + " वटा पेशी सूची तयार भए।";
+        if (monthlyReceivedDates.size === monthlyOutputs.length) {
+          outputStatus.textContent = "महिनाका सबै पेशी सूची तयार छन्। Download .json ले " + toNepaliDigits(rowCount) + " rows को एउटै index.json डाउनलोड गर्छ।";
+          outputStatus.className = "status success";
+        }
+      }
+
+      function showMissingCauseList(dateKey) {
+        const displayDate = dateKey
+          ? toNepaliDigits(`${dateKey.slice(0, 4)}।${dateKey.slice(4, 6)}।${dateKey.slice(6, 8)}`)
+          : "दिइएको";
+        missingMessage.textContent = `उक्त मितिको पेशी सूची भेटिएन। खोजिएको मिति ${displayDate} हो; हाल देखाइएको पेशी सूची यथावत् राखिएको छ।`;
+        missingDialog.classList.add("is-open");
+        missingClose.focus();
+      }
+
+      function closeMissingCauseList() {
+        missingDialog.classList.remove("is-open");
+        causeDateSearch.focus();
+      }
+
+      async function loadCauseListByDate() {
+        const dateKey = compactBsDate(causeDateSearch.value);
+        if (!dateKey) {
+          showInputError("मिति YYYYMMDD वा YYYY।MM।DD ढाँचामा लेख्नुहोस्।");
+          causeDateSearch.focus();
+          return;
+        }
+        const page = causeListPages.find((item) => item.dateKey === dateKey);
+        const filename = page ? page.href : causeListFilename(dateKey);
+        causeDateSearch.value = dateKey;
+        if (page) {
+          window.location.href = filename;
+          return;
+        }
+        showMissingCauseList(dateKey);
+        inputStatus.textContent = `उक्त मितिको पेशी सूची भेटिएन (${filename})।`;
+        inputStatus.className = "status error";
+      }
+
+      function extractSourceMeta(source) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(source, "text/html");
+        const names = [];
+        const seen = new Set();
+        let judgeNodes = Array.from(doc.querySelectorAll(".judge, [class*='judge' i]"));
+        if (!judgeNodes.length) {
+          judgeNodes = Array.from(doc.querySelectorAll("td, th")).filter((node) => isJudgeLabel(node.textContent));
+        }
+        judgeNodes.forEach((node) => {
+          const name = cleanJudgeName(node.textContent);
+          const key = normalize(name);
+          if (!name || !key || seen.has(key)) return;
+          seen.add(key);
+          names.push(name);
+        });
+
+        const courtNode = Array.from(doc.querySelectorAll("h1, h2, .court, [class*='court' i]"))
+          .find((node) => /अदालत/.test(cleanText(node.textContent)));
+        const court = courtNode ? cleanText(courtNode.textContent).replace(/^श्री\s*/, "") : "काठमाडौं जिल्ला अदालत";
+
+        const dateInput = doc.querySelector("#pesi_date, input[name='pesi_date'], input[name*='pesi' i][name*='date' i]");
+        let causeDate = normalizeBsDate(dateInput ? dateInput.getAttribute("value") || dateInput.value : "");
+        if (!causeDate) {
+          const dateMatch = cleanText(doc.body ? doc.body.textContent : "").match(/मिति\s*([०-९0-9]{4}[-।./][०-९0-9]{1,2}[-।./][०-९0-9]{1,2})\s*को/);
+          causeDate = normalizeBsDate(dateMatch ? dateMatch[1] : "");
+        }
+        return { judges: names, court, causeDate };
+      }
+
+      function updateTargetUI() {
+        targetName = cleanText(judgeSelect.value) || DEFAULT_TARGET_NAME;
+        targetKey = normalize(targetName);
+        targetPill.textContent = inputMode === "orders" ? "Output: order_data_*.js" : `लक्षित न्यायाधीश: ${targetName}`;
+        footerTarget.textContent = `Target: माननीय जिल्ला न्यायाधीश श्री ${targetName}`;
+        filterBtn.textContent = inputMode === "orders" ? "आदेश data script बनाउनुहोस्" : `${targetName}को data मात्र राख्नुहोस्`;
+      }
+
+      function detectInputMode(value) {
+        const source = String(value || "");
+        const looksLikeHtml = /<(?:!doctype|html|head|body|table|tr|td|th)\b/i.test(source);
+        const hasOrderEnding = /(?:इति|ईति)\s*(?:संवत्?|सम्वत्?|संम्वत्?|सम्बत्?)/i.test(source);
+        return !looksLikeHtml && hasOrderEnding ? "orders" : "causelist";
+      }
+
+      function setOutputControls(mode) {
+        const orderMode = mode === "orders";
+        outputPanelTitle.textContent = orderMode ? "Generated order data script" : "Filtered output";
+        downloadJs.classList.toggle("hidden", !orderMode);
+        downloadHtml.classList.toggle("hidden", orderMode);
+        downloadJson.classList.toggle("hidden", orderMode);
+        previewBtn.classList.toggle("hidden", orderMode);
+        downloadTxt.textContent = orderMode ? "Download source .txt" : "Download .txt";
+        retainedCountLabel.textContent = orderMode ? "छुट्याइएका आदेश" : "लक्षित इजलास";
+        removedCountLabel.textContent = orderMode ? "आदेशका प्रकार" : "हटाइएका इजलास";
+        causeListDateLabel.textContent = orderMode ? "Script filename" : "पेशी सूची मिति";
+        selectedRowCountLabel.textContent = orderMode ? "Script records" : "Output rows";
+      }
+
+      function updateInputModeUI() {
+        const orderMode = inputMode === "orders";
+        judgePickerControl.classList.toggle("hidden", orderMode);
+        rowFilterControl.classList.toggle("hidden", orderMode);
+        causeDateLoader.classList.toggle("hidden", orderMode);
+        rowFilterToggle.disabled = orderMode || !sourceCode.trim();
+        updateTargetUI();
+        if (sourceCode.trim()) {
+          inputStatus.textContent = orderMode
+            ? "Court-order TXT पहिचान भयो। ‘आदेश data script बनाउनुहोस्’ थिच्नुहोस्।"
+            : inputStatus.textContent;
+        }
+      }
+
+      function refreshJudgeOptions(source) {
+        const previous = judgeSelect.value || DEFAULT_TARGET_NAME;
+        let meta;
+        try {
+          meta = extractSourceMeta(source);
+        } catch (error) {
+          meta = { judges: [] };
+        }
+        const judges = meta.judges || [];
+        if (!judges.some((name) => normalize(name) === normalize(DEFAULT_TARGET_NAME))) judges.unshift(DEFAULT_TARGET_NAME);
+        availableJudges = judges.filter((name, index, list) => list.findIndex((item) => normalize(item) === normalize(name)) === index);
+        judgeSelect.replaceChildren(...availableJudges.map((name) => {
+          const option = document.createElement("option");
+          option.value = name;
+          option.textContent = name;
+          return option;
+        }));
+        const preferred = availableJudges.find((name) => normalize(name) === normalize(previous)) ||
+          availableJudges.find((name) => normalize(name) === normalize(DEFAULT_TARGET_NAME)) || availableJudges[0];
+        judgeSelect.value = preferred || DEFAULT_TARGET_NAME;
+        updateTargetUI();
+      }
+
+      function setMode(mode) {
+        const upload = mode === "upload";
+        uploadTab.setAttribute("aria-selected", String(upload));
+        pasteTab.setAttribute("aria-selected", String(!upload));
+        uploadPane.classList.toggle("hidden", !upload);
+        pastePane.classList.toggle("hidden", upload);
+        if (!upload) sourceInput.focus();
+      }
+
+      function syncSource(value, label = "") {
+        const nextSource = value || "";
+        if (nextSource !== sourceCode) resetRowFilterPanel(true);
+        sourceCode = nextSource;
+        inputMode = detectInputMode(sourceCode);
+        sourceInput.value = sourceCode;
+        const datedFilename = toAsciiDigits(label).match(/^index(\d{6}|\d{8})\.html?$/i);
+        loadedCauseDateKey = datedFilename
+          ? (datedFilename[1].length === 6 ? `20${datedFilename[1]}` : datedFilename[1])
+          : "";
+        if (sourceCode.trim() && inputMode === "causelist") refreshJudgeOptions(sourceCode);
+        filterBtn.disabled = false;
+        rowFilterToggle.disabled = inputMode === "orders" || !sourceCode.trim();
+        clearBtn.disabled = !sourceCode.trim() && !outputCode;
+        fileName.textContent = label;
+        inputStatus.className = "status";
+        inputStatus.textContent = sourceCode
+          ? `${label ? label + " — " : ""}${formatBytes(new Blob([sourceCode]).size)} source तयार छ।`
+          : "HTML वा TXT फाइल छान्नुहोस्, अथवा code paste गर्नुहोस्।";
+        updateInputModeUI();
+        if (label) document.dispatchEvent(new CustomEvent("cause-list:field-snapshot"));
+      }
+
+      function readInputHistory() {
+        try {
+          const stored = JSON.parse(localStorage.getItem(INPUT_HISTORY_KEY) || "[]");
+          inputHistory = Array.isArray(stored)
+            ? stored.filter((item) => item && typeof item.source === "string").slice(0, 3)
+            : [];
+        } catch (error) {
+          inputHistory = [];
+        }
+        renderInputHistory();
+      }
+
+      function renderInputHistory() {
+        inputHistorySelect.replaceChildren();
+        const prompt = document.createElement("option");
+        prompt.value = "";
+        prompt.textContent = inputHistory.length ? "Session रोज्नुहोस्" : "History खाली छ";
+        inputHistorySelect.appendChild(prompt);
+        inputHistory.forEach((item, index) => {
+          const option = document.createElement("option");
+          option.value = String(index);
+          const identity = item.causeDate || item.fileLabel || "Input";
+          option.textContent = `${identity} — ${item.target || DEFAULT_TARGET_NAME} — ${item.savedLabel || ""}`.replace(/\s+—\s*$/, "");
+          inputHistorySelect.appendChild(option);
+        });
+        inputHistorySelect.disabled = !inputHistory.length;
+        restoreInputHistory.disabled = !inputHistory.length || inputHistorySelect.value === "";
+      }
+
+      function saveInputSession(result) {
+        const session = {
+          source: sourceCode,
+          fileLabel: fileName.textContent || "",
+          target: targetName,
+          causeDate: result && result.causeDate || "",
+          savedLabel: new Date().toLocaleString("ne-NP", {dateStyle:"short", timeStyle:"short"})
+        };
+        inputHistory = [session, ...inputHistory.filter((item) => item.source !== sourceCode)].slice(0, 3);
+        try { localStorage.setItem(INPUT_HISTORY_KEY, JSON.stringify(inputHistory)); } catch (error) { /* in-memory history remains usable */ }
+        renderInputHistory();
+      }
+
+      function restoreSelectedInputSession() {
+        const index = Number(inputHistorySelect.value);
+        const session = Number.isInteger(index) ? inputHistory[index] : null;
+        if (!session) return;
+        setMode("paste");
+        syncSource(session.source, session.fileLabel || "History");
+        const judge = Array.from(judgeSelect.options).find((option) => normalize(option.value) === normalize(session.target));
+        if (judge) judgeSelect.value = judge.value;
+        updateTargetUI();
+        inputStatus.textContent = "History बाट input restore भयो। Filter button थिच्नुहोस्।";
+        inputStatus.className = "status success";
+      }
+
+      async function readFile(file) {
+        if (!file) return;
+        const validExtension = /\.(html?|txt)$/i.test(file.name);
+        if (!validExtension && !["text/html", "text/plain", ""].includes(file.type)) {
+          showInputError("कृपया .html, .htm वा .txt फाइल मात्र छान्नुहोस्।");
+          return;
+        }
+
+        try {
+          const text = await file.text();
+          syncSource(text, file.name);
+          inputStatus.className = "status success";
+        } catch (error) {
+          showInputError("फाइल पढ्न सकिएन। अर्को फाइल प्रयास गर्नुहोस्।");
+        }
+      }
+
+      function showInputError(message) {
+        inputStatus.textContent = message;
+        inputStatus.className = "status error";
+      }
+
+      function findNextTable(table) {
+        let next = table ? table.nextElementSibling : null;
+        while (next && next.tagName !== "TABLE") {
+          if (!/^(BR|HR)$/i.test(next.tagName)) return null;
+          next = next.nextElementSibling;
+        }
+        return next && next.tagName === "TABLE" ? next : null;
+      }
+
+      function removeBenchGroup(headerTable) {
+        const group = headerTable && headerTable.dataset ? headerTable.dataset.cobBenchGroup : "";
+        if (group && headerTable.ownerDocument) {
+          Array.from(headerTable.ownerDocument.querySelectorAll("table[data-cob-bench-group]")).forEach((table) => {
+            if (table === headerTable || table.dataset.cobBenchGroup !== group) return;
+            const after = table.nextElementSibling;
+            table.remove();
+            if (after && after.tagName === "BR") after.remove();
+          });
+          headerTable.remove();
+          return;
+        }
+        const recordTable = findNextTable(headerTable);
+        if (recordTable) {
+          const afterRecord = recordTable.nextElementSibling;
+          recordTable.remove();
+          if (afterRecord && afterRecord.tagName === "BR") afterRecord.remove();
+        }
+        headerTable.remove();
+      }
+
+      function installCourtDocumentBuilder(doc, config) {
+        doc.querySelectorAll("#cause-list-ribbon-runtime, #cause-list-ribbon-style, #court-order-builder-runtime, #court-order-builder-style, #nepali-proofreader-engine-runtime, #cause-list-firebase-sync-runtime, #cause-list-firebase-sync-style, #cause-list-config, script[data-cob-nepali-date]")
+          .forEach((node) => node.remove());
+        const head = doc.head || doc.documentElement.insertBefore(doc.createElement("head"), doc.body || null);
+        const ribbonStyle = doc.createElement("link");
+        ribbonStyle.id = "cause-list-ribbon-style";
+        ribbonStyle.rel = "stylesheet";
+        ribbonStyle.href = "cause-list-ribbon.css";
+        head.appendChild(ribbonStyle);
+        const style = doc.createElement("link");
+        style.id = "court-order-builder-style";
+        style.rel = "stylesheet";
+        style.href = "cause-list-runtime.css";
+        head.appendChild(style);
+        const syncStyle = doc.createElement("link");
+        syncStyle.id = "cause-list-firebase-sync-style";
+        syncStyle.rel = "stylesheet";
+        syncStyle.href = "firebase-sync.css";
+        head.appendChild(syncStyle);
+        const selectedJudge = cleanText(config && config.selectedJudge) || DEFAULT_TARGET_NAME;
+        const minimalConfig = Object.assign({}, config || {}, { selectedJudge, judges:[selectedJudge] });
+        const configNode = doc.createElement("script");
+        configNode.id = "cause-list-config";
+        configNode.type = "application/json";
+        configNode.textContent = JSON.stringify(minimalConfig).replace(/</g, "\\u003c");
+        (doc.body || doc.documentElement).appendChild(configNode);
+        const ribbonRuntime = doc.createElement("script");
+        ribbonRuntime.id = "cause-list-ribbon-runtime";
+        ribbonRuntime.src = "cause-list-ribbon.js";
+        (doc.body || doc.documentElement).appendChild(ribbonRuntime);
+        const dateLibrary = doc.createElement("script");
+        dateLibrary.setAttribute("data-cob-nepali-date", "3.4.0");
+        dateLibrary.src = "https://cdn.jsdelivr.net/npm/nepali-date-converter@3.4.0/dist/nepali-date-converter.umd.js";
+        (doc.body || doc.documentElement).appendChild(dateLibrary);
+        const runtime = doc.createElement("script");
+        runtime.id = "court-order-builder-runtime";
+        runtime.setAttribute("data-version", "5");
+        runtime.src = "cause-list-runtime.js";
+        (doc.body || doc.documentElement).appendChild(runtime);
+        const proofreaderRuntime = doc.createElement("script");
+        proofreaderRuntime.id = "nepali-proofreader-engine-runtime";
+        proofreaderRuntime.src = "nepali-proofreader-engine.js";
+        (doc.body || doc.documentElement).appendChild(proofreaderRuntime);
+        const syncRuntime = doc.createElement("script");
+        syncRuntime.id = "cause-list-firebase-sync-runtime";
+        syncRuntime.defer = true;
+        syncRuntime.src = "firebase-sync.js";
+        (doc.body || doc.documentElement).appendChild(syncRuntime);
+      }
+
+      function stripSourceChrome(doc) {
+        const head = doc.head || doc.documentElement.insertBefore(doc.createElement("head"), doc.body || null);
+
+        // Source website को header/navigation हटाइन्छ; cause-list date form र tables यथावत् राखिन्छन्।
+        doc.querySelectorAll(".first_level_tab + br.clear, #top_bar, .first_level_tab, #tab2, #tab3, #tab4")
+          .forEach((node) => node.remove());
+        doc.querySelectorAll("script").forEach((node) => node.remove());
+        doc.querySelectorAll("style").forEach((node) => {
+          if (/firebugResetStyles|firebugLayoutBox/.test(node.textContent || "")) node.remove();
+        });
+        const compactContainers = new Set(["HTML","HEAD","BODY","DIV","TABLE","THEAD","TBODY","TFOOT","TR","FORM"]);
+        const prune = (node) => {
+          Array.from(node.childNodes || []).forEach((child) => {
+            if (child.nodeType === 8) {
+              child.remove();
+              return;
+            }
+            if (child.nodeType === 3 && !child.nodeValue.trim() && compactContainers.has(node.nodeName)) {
+              child.remove();
+              return;
+            }
+            prune(child);
+          });
+        };
+        prune(doc.documentElement);
+
+        let adjustment = doc.getElementById("cause-list-output-adjustments");
+        if (!adjustment) {
+          adjustment = doc.createElement("style");
+          adjustment.id = "cause-list-output-adjustments";
+          adjustment.textContent = "#tab1{display:block!important}";
+          head.appendChild(adjustment);
+        }
+      }
+
+      function annotateCauseListTables(parsed) {
+        const benchCauseCounts = new Map();
+        let fallbackBenchNumber = 0;
+        const benchHeaderTables = Array.from(parsed.querySelectorAll("table")).filter((table) => {
+          const judgeCell = table.querySelector(".judge, [class*='judge' i]");
+          return Boolean(judgeCell && isJudgeLabel(judgeCell.textContent));
+        });
+        benchHeaderTables.forEach((headerTable, headerIndex) => {
+          const benchMatch = toAsciiDigits(cleanText(headerTable.textContent)).match(/इजलास|इजलाश/i);
+          const textAfterBench = benchMatch
+            ? toAsciiDigits(cleanText(headerTable.textContent)).slice(benchMatch.index + benchMatch[0].length)
+            : "";
+          const numberMatch = textAfterBench.match(/\d+/);
+          const benchNumber = numberMatch ? String(Number(numberMatch[0])) : String(++fallbackBenchNumber);
+          headerTable.dataset.cobBenchNumber = benchNumber;
+          headerTable.dataset.cobBenchGroup = String(headerIndex + 1);
+          const nextHeader = benchHeaderTables[headerIndex + 1] || null;
+          let node = headerTable.nextElementSibling;
+          let recordsFound = 0;
+          while (node && node !== nextHeader) {
+            const next = node.nextElementSibling;
+            if (node.tagName === "TABLE") {
+              const headingText = cleanText(Array.from(node.querySelectorAll("th")).map((cell) => cell.textContent).join(" "));
+              if (/कैफियत/.test(headingText) && /मुद्दा|निवेदन/.test(headingText)) {
+                const causeListNumber = (benchCauseCounts.get(benchNumber) || 0) + 1;
+                benchCauseCounts.set(benchNumber, causeListNumber);
+                node.dataset.cobBenchNumber = benchNumber;
+                node.dataset.cobCauselistNumber = String(causeListNumber);
+                node.dataset.cobBenchGroup = String(headerIndex + 1);
+                recordsFound += 1;
+              }
+            }
+            node = next;
+          }
+          if (!recordsFound) {
+            const recordTable = findNextTable(headerTable);
+            if (recordTable) {
+              const causeListNumber = (benchCauseCounts.get(benchNumber) || 0) + 1;
+              benchCauseCounts.set(benchNumber, causeListNumber);
+              recordTable.dataset.cobBenchNumber = benchNumber;
+              recordTable.dataset.cobCauselistNumber = String(causeListNumber);
+              recordTable.dataset.cobBenchGroup = String(headerIndex + 1);
+            }
+          }
+        });
+        return benchHeaderTables;
+      }
+
+      function normalizeRowSerial(value) {
+        return toAsciiDigits(cleanText(value))
+          .replace(/[\s.,।॥:;\-_/\\]+/g, "")
+          .toLowerCase();
+      }
+
+      function parseRowFilterValue(value) {
+        const raw = String(value == null ? "ALL" : value).trim();
+        if (!raw || /^(?:all|सबै)$/i.test(raw)) return { all: true, serials: new Set() };
+        const serials = new Set(
+          raw
+            .split(/[,，、;\n]+/)
+            .map(normalizeRowSerial)
+            .filter(Boolean),
+        );
+        if (serials.has("all") || serials.has(normalizeRowSerial("सबै")))
+          return { all: true, serials: new Set() };
+        return { all: !serials.size, serials };
+      }
+
+      function causeListTableInfo(table) {
+        const rows = Array.from(table.rows || []);
+        let headerRow = null;
+        let serialIndex = 0;
+        let bestScore = -1;
+        rows.slice(0, 5).forEach((row) => {
+          const cells = Array.from(row.cells || []);
+          let score = 0;
+          let candidateSerial = -1;
+          cells.forEach((cell, index) => {
+            const heading = normalize(cell.textContent);
+            if (["क्रस", "क्रसं", "क्रमसंख्या", "सिन", "सिनं"].some((key) => heading.includes(normalize(key)))) {
+              candidateSerial = index;
+              score += 3;
+            }
+            if (/मुद्दा|निवेदन/.test(cleanText(cell.textContent))) score += 1;
+            if (/कैफियत/.test(cleanText(cell.textContent))) score += 1;
+          });
+          if (candidateSerial >= 0 && score > bestScore) {
+            bestScore = score;
+            headerRow = row;
+            serialIndex = candidateSerial;
+          }
+        });
+        if (!headerRow) {
+          headerRow = rows.find((row) => row.querySelector("th")) || rows[0] || null;
+          serialIndex = 0;
+        }
+        const dataRows = [];
+        let currentSerial = "";
+        rows.forEach((row) => {
+          if (row === headerRow || row.querySelector("th")) return;
+          const cells = Array.from(row.cells || []).filter((cell) => cell.tagName === "TD");
+          if (cells.length < 2 || !cells[serialIndex]) return;
+          const rawSerial = cleanText(cells[serialIndex].textContent);
+          if (rawSerial) currentSerial = normalizeRowSerial(rawSerial);
+          if (!currentSerial) return;
+          dataRows.push({ row, serial: currentSerial, rawSerial: rawSerial || currentSerial });
+        });
+        const serials = Array.from(new Map(dataRows.map((item) => [item.serial, item.rawSerial])).values());
+        return { headerRow, serialIndex, dataRows, serials };
+      }
+
+      function targetCauseListTables(parsed, shouldAnnotate = true) {
+        const headers = shouldAnnotate
+          ? annotateCauseListTables(parsed)
+          : Array.from(parsed.querySelectorAll("table[data-cob-bench-group]")).filter((table) =>
+              Boolean(table.querySelector(".judge, [class*='judge' i]")),
+            );
+        const groups = new Set(
+          headers
+            .filter((table) => {
+              const judge = table.querySelector(".judge, [class*='judge' i]");
+              return judge && isTarget(judge.textContent);
+            })
+            .map((table) => table.dataset.cobBenchGroup),
+        );
+        return Array.from(parsed.querySelectorAll("table[data-cob-causelist-number]") )
+          .filter((table) => groups.has(table.dataset.cobBenchGroup))
+          .map((table, index) => {
+            const bench = table.dataset.cobBenchNumber || "1";
+            const causeList = table.dataset.cobCauselistNumber || String(index + 1);
+            return {
+              table,
+              bench,
+              causeList,
+              key: [table.dataset.cobBenchGroup || "1", bench, causeList].join(":"),
+              info: causeListTableInfo(table),
+            };
+          });
+      }
+
+      function captureRowFilterInputs() {
+        rowFilterList.querySelectorAll("[data-row-filter-key]").forEach((input) => {
+          rowFilterSelections.set(input.dataset.rowFilterKey, input.value || "ALL");
+        });
+      }
+
+      function renderRowFilterPanel() {
+        captureRowFilterInputs();
+        const source = sourceInput.value || sourceCode;
+        rowFilterList.replaceChildren();
+        rowFilterTables = [];
+        if (!source.trim()) {
+          rowFilterStatus.textContent = "पहिले HTML/TXT source राख्नुहोस्।";
+          return;
+        }
+        try {
+          const parsed = new DOMParser().parseFromString(source, "text/html");
+          rowFilterTables = targetCauseListTables(parsed, true);
+          rowFilterTables.forEach((entry, index) => {
+            const item = document.createElement("div");
+            item.className = "row-filter-item";
+            const inputId = "rowFilterTable" + (index + 1);
+            const label = document.createElement("label");
+            label.htmlFor = inputId;
+            label.textContent = `Table ${index + 1} · इजलास ${entry.bench} · सूची ${entry.causeList}`;
+            const input = document.createElement("input");
+            input.id = inputId;
+            input.type = "text";
+            input.value = rowFilterSelections.get(entry.key) || "ALL";
+            input.placeholder = "ALL वा क, ग, २, ४";
+            input.dataset.rowFilterKey = entry.key;
+            input.setAttribute("aria-label", `Table ${index + 1} का serial rows`);
+            input.addEventListener("input", () => {
+              rowFilterSelections.set(entry.key, input.value || "ALL");
+            });
+            const hint = document.createElement("small");
+            hint.textContent = entry.info.serials.length
+              ? "उपलब्ध serial: " + entry.info.serials.join(", ")
+              : "यस table मा serial rows भेटिएनन्।";
+            item.append(label, input, hint);
+            rowFilterList.appendChild(item);
+          });
+          rowFilterStatus.textContent = rowFilterTables.length
+            ? `${targetName} का ${toNepaliDigits(rowFilterTables.length)} वटा causelist table भेटिए।`
+            : `${targetName} को causelist table भेटिएन।`;
+        } catch (error) {
+          rowFilterStatus.textContent = "Source बाट causelist tables पढ्न सकिएन।";
+        }
+      }
+
+      function resetRowFilterPanel(clearSelections = true) {
+        if (clearSelections) rowFilterSelections.clear();
+        rowFilterTables = [];
+        rowFilterList.replaceChildren();
+        rowFilterStatus.textContent = "";
+        rowFilterPanel.hidden = true;
+        rowFilterToggle.setAttribute("aria-expanded", "false");
+      }
+
+      function filterSource(source) {
+        const parser = new DOMParser();
+        const parsed = parser.parseFromString(source, "text/html");
+        if (!parsed.documentElement || parsed.querySelector("parsererror")) {
+          throw new Error("दिइएको code लाई HTML को रूपमा पढ्न सकिएन।");
+        }
+
+        // Filter गर्नु अघि प्रत्येक record table मा इजलास र सो इजलासको पेशी-सूची क्रम सुरक्षित गरिन्छ।
+        const benchHeaderTables = annotateCauseListTables(parsed);
+
+        const candidateRows = Array.from(parsed.querySelectorAll("tr")).filter((row) => {
+          return row.querySelector("td") && isJudgeLabel(row.textContent);
+        });
+
+        if (!candidateRows.length) {
+          throw new Error("Source code मा न्यायाधीशको विवरण पहिचान भएन।");
+        }
+
+        let retainedBenches = 0;
+        let removedBenches = 0;
+        let targetFound = false;
+        const touchedSummaryTables = new Set();
+
+        candidateRows.forEach((row) => {
+          if (!row.isConnected) return;
+          const table = row.closest("table");
+          if (!table) return;
+
+          const rowText = row.textContent || "";
+          const looksLikeBenchHeader = Boolean(row.querySelector(".judge, [class*='judge' i]")) ||
+            (/इजलाश|इजलास/.test(rowText) && table.querySelectorAll("tr").length <= 3);
+          const matchesTarget = isTarget(rowText);
+
+          if (matchesTarget) {
+            targetFound = true;
+            if (looksLikeBenchHeader) retainedBenches += 1;
+            return;
+          }
+
+          if (looksLikeBenchHeader) {
+            removeBenchGroup(table);
+            removedBenches += 1;
+          } else {
+            touchedSummaryTables.add(table);
+            row.remove();
+          }
+        });
+
+        touchedSummaryTables.forEach((table) => {
+          Array.from(table.querySelectorAll("tr")).forEach((row) => {
+            if (/जम्मा\s*[:：]?/i.test(row.textContent || "")) row.remove();
+          });
+        });
+
+        // दोस्रो सुरक्षा चरण: कुनै फरक न्यायाधीशको header बाँकी रहे हटाइन्छ।
+        Array.from(parsed.querySelectorAll(".judge, [class*='judge' i]")).forEach((cell) => {
+          if (isTarget(cell.textContent)) return;
+          const table = cell.closest("table");
+          if (table && table.isConnected) {
+            removeBenchGroup(table);
+            removedBenches += 1;
+          }
+        });
+
+        // User ले प्रत्येक causelist table का लागि दिएको serial selection लागू गरिन्छ।
+        let removedRequestedRows = 0;
+        let explicitlyFilteredTables = 0;
+        const unmatchedRowSerials = [];
+        targetCauseListTables(parsed, false).forEach((entry, index) => {
+          const requested = parseRowFilterValue(rowFilterSelections.get(entry.key) || "ALL");
+          if (requested.all) return;
+          explicitlyFilteredTables += 1;
+          const matched = new Set();
+          entry.info.dataRows.forEach((item) => {
+            if (requested.serials.has(item.serial)) {
+              matched.add(item.serial);
+              return;
+            }
+            item.row.remove();
+            removedRequestedRows += 1;
+          });
+          const missing = Array.from(requested.serials).filter((serial) => !matched.has(serial));
+          if (missing.length)
+            unmatchedRowSerials.push(`Table ${index + 1}: ${missing.join(", ")}`);
+        });
+
+        // लक्षित इजलासभित्र पनि अन्तिम disposition column मा यी अवस्था भएका मुद्दा output मा राखिँदैनन्।
+        let removedDispositionRows = 0;
+        const excludedDispositionKeys = ["हेर्न नभ्याइने", "हेर्न नभ्याईने", "स्थगित"].map(normalize);
+        Array.from(parsed.querySelectorAll("table[data-cob-causelist-number]")).forEach((table) => {
+          Array.from(table.querySelectorAll("tr")).forEach((row) => {
+            const cells = Array.from(row.children).filter((cell) => cell.tagName === "TD");
+            if (!cells.length) return;
+            const disposition = normalize(cells[cells.length - 1].textContent);
+            if (!excludedDispositionKeys.some((key) => disposition.includes(key))) return;
+            row.remove();
+            removedDispositionRows += 1;
+          });
+        });
+
+        const selectedRows = targetCauseListTables(parsed, false).reduce(
+          (total, entry) => total + causeListTableInfo(entry.table).dataRows.length,
+          0,
+        );
+
+        if (!targetFound) {
+          throw new Error(`Source code मा “${targetName}” को विवरण भेटिएन।`);
+        }
+
+        const sourceMeta = extractSourceMeta(source);
+        stripSourceChrome(parsed);
+        installCourtDocumentBuilder(parsed, {
+          selectedJudge: targetName,
+          judges: [targetName],
+          court: sourceMeta.court,
+          causeDate: sourceMeta.causeDate || normalizeBsDate(loadedCauseDateKey),
+          causeDateKey: compactBsDate(sourceMeta.causeDate) || loadedCauseDateKey,
+          orderRoot: "order",
+          orderManifestPath: "order/index.json"
+        });
+
+        const originalDoctype = source.match(/<!doctype[^>]*>/i);
+        const doctype = originalDoctype ? originalDoctype[0] : "<!doctype html>";
+        const html = `${doctype}\n${parsed.documentElement.outerHTML}`;
+
+        return {
+          html,
+          retainedBenches: Math.max(retainedBenches, 1),
+          removedBenches,
+          removedDispositionRows,
+          removedRequestedRows,
+          explicitlyFilteredTables,
+          unmatchedRowSerials,
+          selectedRows,
+          causeDate: sourceMeta.causeDate || normalizeBsDate(loadedCauseDateKey)
+        };
+      }
+
+      function splitCourtOrderText(source) {
+        const text = String(source || "").replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n").trim();
+        if (!text) return [];
+        const ending = /^[^\n]*(?:इति|ईति)\s*(?:संवत्?|सम्वत्?|संम्वत्?|सम्बत्?)[^\n]*$/gim;
+        const parts = [];
+        let cursor = 0;
+        let match;
+        while ((match = ending.exec(text))) {
+          const end = match.index + match[0].length;
+          const part = text.slice(cursor, end).trim();
+          if (part) parts.push(part);
+          cursor = end;
+        }
+        const remainder = text.slice(cursor).trim();
+        if (remainder) {
+          if (parts.length) parts[parts.length - 1] += "\n" + remainder;
+          else parts.push(remainder);
+        }
+        return parts;
+      }
+
+      function orderDataCanonicalNumber(value) {
+        return toNepaliDigits(String(value || "").replace(/\s*[-–—]\s*/g, "-").trim().toUpperCase());
+      }
+
+      function extractOrderNumbers(text) {
+        const header = String(text || "").split(/\r?\n/).slice(0, 45).join("\n");
+        const pattern = /(^|[^\w०-९])([०-९0-9]{2,4}\s*[-–—]\s*[A-Za-z०-९0-9]+\s*[-–—]\s*[०-९0-9]+)/gi;
+        const values = [];
+        let match;
+        while ((match = pattern.exec(header))) {
+          const value = orderDataCanonicalNumber(match[2]);
+          if (!values.includes(value)) values.push(value);
+        }
+        return {
+          petitionNumber: values.find((value) => value.includes("FN")) || "",
+          caseNumber: values.find((value) => !value.includes("FN")) || ""
+        };
+      }
+
+      function extractOrderDate(text) {
+        const lines = String(text || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+        const dateLine = [...lines].reverse().find((line) => /(?:इति|ईति)\s*(?:संवत्?|सम्वत्?|संम्वत्?|सम्बत्?)/i.test(line)) || "";
+        const numeric = dateLine.match(/([०-९0-9]{4})\s*[।./-]\s*([०-९0-9]{1,2})\s*[।./-]\s*([०-९0-9]{1,2})/);
+        if (numeric) {
+          return [numeric[1], numeric[2], numeric[3]].map((part, index) => {
+            const ascii = toAsciiDigits(part);
+            return toNepaliDigits(index ? ascii.padStart(2, "0") : ascii);
+          }).join("।");
+        }
+        const months = {
+          "बैशाख":"01", "वैशाख":"01", "जेठ":"02", "जेष्ठ":"02", "असार":"03", "आषाढ":"03",
+          "श्रावण":"04", "साउन":"04", "भदौ":"05", "भाद्र":"05", "असोज":"06", "आश्विन":"06",
+          "कार्तिक":"07", "कात्तिक":"07", "मंसिर":"08", "मङ्सिर":"08", "पुष":"09", "पौष":"09",
+          "माघ":"10", "फागुन":"11", "फाल्गुन":"11", "फाल्गुण":"11", "चैत":"12", "चैत्र":"12"
+        };
+        const year = toAsciiDigits(dateLine).match(/(\d{4})\s*साल/);
+        const monthName = Object.keys(months).find((name) => dateLine.includes(name));
+        if (!year || !monthName) return "";
+        const afterMonth = toAsciiDigits(dateLine.slice(dateLine.indexOf(monthName) + monthName.length));
+        const day = afterMonth.match(/(?:महिना\s*)?(\d{1,2})\s*गते/);
+        return day ? `${toNepaliDigits(year[1])}।${toNepaliDigits(months[monthName])}।${toNepaliDigits(day[1].padStart(2, "0"))}` : "";
+      }
+
+      function cleanOrderParty(line, role) {
+        return String(line || "")
+          .replace(new RegExp(role + "\\s*$"), "")
+          .replace(/[.·_\-–—]{3,}/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .replace(/^[ .·_\-–—]+|[ .·_\-–—]+$/g, "");
+      }
+
+      function extractOrderParties(text) {
+        const lines = String(text || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean).slice(0, 45);
+        let petitioner = "";
+        let respondent = "";
+        for (const line of lines) {
+          for (const role of ["निवेदक", "वादी", "पुनरावेदक"]) {
+            if (!petitioner && new RegExp(role + "\\s*$").test(line)) petitioner = cleanOrderParty(line, role);
+          }
+          for (const role of ["विपक्षी", "प्रतिवादी", "प्रत्यर्थी"]) {
+            if (!respondent && new RegExp(role + "\\s*$").test(line)) respondent = cleanOrderParty(line, role);
+          }
+        }
+        if (!respondent) {
+          const fallback = String(text || "").match(/प्रतिवादी\s+([^।,\n]{2,80}?)(?:लाई|ले|को|उपर|विरुद्ध)/);
+          if (fallback) respondent = cleanText(fallback[1]);
+        }
+        return { petitioner, respondent };
+      }
+
+      function extractOrderSubjects(text) {
+        const lines = String(text || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean).slice(0, 48);
+        let petitionSubject = "";
+        let caseName = "";
+        const numberOnly = /^[०-९0-9]{2,4}\s*[-–—]\s*[A-Za-z०-९0-9]+\s*[-–—]\s*[०-९0-9]+$/i;
+        lines.forEach((line) => {
+          const petition = line.match(/^(?:निवेदन(?:को)?\s+)?विषय\s*[:ः\-–—]+\s*(.+)$/);
+          const caseMatch = line.match(/^(?:मुद्दा|मूदा)\s*[:ः\-–—]+\s*(.+)$/);
+          if (petition && !petitionSubject) petitionSubject = cleanText(petition[1]).replace(/[।.]+$/, "");
+          if (caseMatch && !caseName) {
+            const value = cleanText(caseMatch[1]).replace(/[।.]+$/, "");
+            if (value && !numberOnly.test(value)) caseName = value;
+          }
+        });
+        return { petitionSubject, caseName };
+      }
+
+      function extractOrderHeader(text) {
+        const lines = String(text || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+        const courtLine = lines.slice(0, 20).find((line) => line.includes("अदालत")) || "काठमाडौं जिल्ला अदालत";
+        const court = /जिल्ला अदालत/.test(courtLine) && /काठमाडौं|काठमाण्ड|काठमाडौँ/.test(courtLine)
+          ? "काठमाडौं जिल्ला अदालत"
+          : cleanText(courtLine);
+        const judgeLine = lines.slice(0, 28).find((line) => line.includes("न्यायाधीश")) || "";
+        const named = judgeLine.match(/श्री\s+(.+)$/);
+        const stripped = cleanText(judgeLine.replace(/^(?:माननीय\s+)?(?:(?:जिल्ला|उच्च|मुख्य)\s+)?न्यायाधीश\s*/, ""));
+        const judgeName = named ? "श्री " + cleanText(named[1]) : (stripped ? "श्री " + stripped.replace(/^श्री\s+/, "") : "");
+        return { court, judgeName, judge: judgeName ? `${judgeName} (${court})` : `(${court})` };
+      }
+
+      function extractOrderBody(text) {
+        const lines = String(text || "").split(/\r?\n/).map((line) => line.trim());
+        let end = lines.length;
+        for (let index = lines.length - 1; index >= 0; index -= 1) {
+          if (/(?:इति|ईति)\s*(?:संवत्?|सम्वत्?|संम्वत्?|सम्बत्?)/i.test(lines[index])) end = index;
+          if (index > lines.length / 2 && /^(?:जिल्ला\s+)?न्यायाधीश$/.test(lines[index])) {
+            end = Math.min(end, index);
+            break;
+          }
+        }
+        const issuePositions = [];
+        lines.slice(0, Math.min(end, 50)).forEach((line, index) => {
+          if (/^(?:(?:निवेदन(?:को)?\s+)?विषय|मुद्दा|मूदा)\s*[:ः\-–—]/.test(line)) issuePositions.push(index);
+        });
+        let start = issuePositions.length ? issuePositions[issuePositions.length - 1] + 1 : 0;
+        if (!issuePositions.length) {
+          const marker = lines.slice(0, Math.min(end, 50)).findIndex((line) =>
+            line.length >= 25 && /^(यसमा|प्रस्तुत|उपरोक्त|निवेदन|वादी|प्रतिवादी|मिसिल|यस अदालत)/.test(line));
+          if (marker >= 0) start = marker;
+        }
+        return lines.slice(start, end).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+      }
+
+      function inferOrderCategory(text, body) {
+        const source = `${body}\n${text}`;
+        const rules = [
+          ["पाँचप्रतिशतधरौटीसमायोजन", "panchpratishatdharautisamayojan", /(?:पाँच|५)\s*प्रतिशत.*धरौटी.*समायोजन/i],
+          ["पाँचप्रतिशतकैदीपुर्जीसंशोधन", "panchpratishatkaidipurjisanshodhan", /(?:पाँच|५)\s*प्रतिशत.*कैदी\s*पुर्जी|कैदी\s*पुर्जी.*संशोधन/i],
+          ["पाँचप्रतिशतजरिवाना", "panchpratishatjaribana", /(?:पाँच|५)\s*प्रतिशत.*जरि[बव]ाना/i],
+          ["अदालतीशुल्कसुविधा", "adalatishulkasubidha", /अदालती?\s*शुल्क.*सुविधा|अदालती?\s*शुल्क.*पछि\s*बुझाउन/i],
+          ["अल्पकालीनआदेशनिरन्तरतानदिने", "alpakalinaadeshnirantaratanadine", /अल्पकालीन.*निरन्तरता.*नदिने|निरन्तरता\s*दिन.*नमिल/i],
+          ["अल्पकालीनअन्तरिमआदेश", "alpakalinantarimaadesh", /अल्पकालीन\s+अन्तरिम\s+आदेश/i],
+          ["अंशियारबुझ्ने", "anshiyarbujhne", /अंशियार.*(?:बुझ|खुलाउन|म्याद\s*जारी|प्रतिवादी\s*कायम)/i],
+          ["अन्तरिमआदेशअस्वीकार", "antarimaadeshaswikar", /अन्तरिम\s+आदेश.*(?:जारी|दिन).*नमिल|अन्तरिम\s+आदेश.*अस्वीकार/i],
+          ["अन्तरिमआदेशछलफल", "antarimaadeshchhalphal", /अन्तरिम.*छलफल|छलफल.*पेशी|दुवै\s*पक्ष.*छलफल/i],
+          ["विदेशीप्रतिवादीपत्रिकाम्याद", "bideshiprativadipatrikamyad", /विदेशी.*प्रतिवादी.*पत्रिका/i],
+          ["बिगोबापतकैद", "bigobapatkaid", /बिगो.*बापत.*कैद/i],
+          ["व्यवसायअवरोधरोक", "byabasayaawarodharok", /व्यवसाय.*(?:नरोक|अवरोध)/i],
+          ["कलडिटेलविवरण", "calldetailbibaran", /कल\s*डिटेल|call\s*detail/i],
+          ["दफा१५५कैदसुविधा", "dapha155kaidsubidha", /दफा\s*(?:१५५|155).*सुविधा|दफा\s*(?:१५५|155).*कैद/i],
+          ["दशीफिर्ताअस्वीकार", "dashiphirtaaswikar", /दशी.*फिर्ता.*(?:नदिने|अस्वीकार)/i],
+          ["धरौटीफिर्ता", "dharautiphirta", /धरौटी.*फिर्ता/i],
+          ["गैरकानूनीपक्राउरोक", "gairkanunipakraurok", /गैरकानूनी.*पक्राउ|पक्राउ.*(?:नगर्न|नरोक)/i],
+          ["हालसाविकनिर्णयफाइल", "halsabiknirnayfile", /हाल\s*साविक.*निर्णय/i],
+          ["कागजप्रमाणीकरण", "kagajpramanikaran", /कागज.*प्रमाणीकरण|प्रमाणीकरण.*कागज/i],
+          ["कैदपूर्वसुनुवाइम्याद", "kaidapurwasunuwaimyad", /कैद.*पूर्व.*सुनुवाइ/i],
+          ["कालोसूचीआदेशअस्वीकार", "kalosuchiaadeshaswikar", /कालो\s*सूची.*(?:नराख|अस्वीकार)/i],
+          ["कम्पनीविवरण", "kampanibibaran", /कम्पनी.*विवरण/i],
+          ["कारणदेखाउ", "karandekhau", /कारण\s*देखाउ/i],
+          ["लगाउमुद्दा", "lagaumudda", /लगाउ.*मुद्दा/i],
+          ["मेलमिलाप", "melmilap", /मेलमिलाप/i],
+          ["मुद्दास्थानान्तरण", "muddasthanantaran", /मुद्दा.*स्थानान्तरण/i],
+          ["मुल्तवीजगाउने", "multabijagaune", /मुल्तवी.*जगा/i],
+          ["म्यादबदर", "myadbadar", /म्याद.*बदर|बदर.*म्याद/i],
+          ["नाबालकभेटघाट", "nabalakbhetghat", /नाबालक.*भेटघाट/i],
+          ["नापीविवरण", "napibibaran", /नापी.*विवरण/i],
+          ["नापनक्सा", "napnaksa", /नाप\s*नक्सा/i],
+          ["निर्माणरोक", "nirmanrok", /निर्माण.*(?:रोक|नगर्न)/i],
+          ["पत्रिकाम्याद", "patrikamyad", /पत्रिका.*म्याद/i],
+          ["पेशीजानकारी", "peshijanakari", /पेशी.*जानकारी/i],
+          ["पेशीस्थगित", "peshisthagit", /पेशी.*स्थगित/i],
+          ["पुनरावेदनजानकारी", "punarabedanjanakari", /पुनरावेदन.*जानकारी/i],
+          ["पूर्वआदेशकार्यान्वयन", "purwaaadeshkaryanwayan", /पूर्व.*आदेश.*कार्यान्वयन/i],
+          ["रोक्काफुकुवा", "rokkaphukuwa", /रोक्का.*फुकुवा/i],
+          ["सक्कलचेकपेश", "sakkalchekpesh", /सक्कल.*चेक.*पेश/i],
+          ["सक्कलकागजपेश", "sakkalkagajpesh", /सक्कल.*कागज.*पेश/i],
+          ["सक्कलमिसिलझिकाउने", "sakkalmisiljhikaune", /सक्कल.*मिसिल.*झिका/i],
+          ["साक्षीबकपत्र", "sakshibakpatra", /साक्षी.*बकपत्र|बकपत्र.*साक्षी/i],
+          ["सम्बन्धितइजलासपेश", "sambandhitijalasapesh", /सम्बन्धित.*इजलास.*पेश/i],
+          ["सम्झौतासाक्षीबयान", "samjhautasakshibayan", /सम्झौता.*साक्षी.*बयान/i],
+          ["थमाउनेम्याद", "thamaunemyad", /थमाउने.*म्याद|म्याद.*थमाइ/i],
+          ["निषेधाज्ञाआदेश", "nishedhagyadesh", /निषेधाज्ञा.*(?:जारी|आदेश)/i]
+        ];
+        const found = rules.find((rule) => rule[2].test(source));
+        return found ? { nepali: found[0], english: found[1] } : { nepali: "अन्य", english: "anya" };
+      }
+
+      function summarizeOrderBody(body) {
+        const sentences = String(body || "").split(/(?<=।)|\n+/).map(cleanText).filter(Boolean);
+        const commands = /गर्नू|गर्नु|गरिदिएको|ठहर्छ|परेन|मिलेन|जारी|बदर|फिर्ता|राख्न/;
+        const candidates = sentences.filter((sentence) => commands.test(sentence));
+        let summary = (candidates.length ? candidates.slice(-2) : sentences.slice(-2)).join(" ");
+        if (summary.length > 380) summary = summary.slice(-380).replace(/^\S*\s*/, "").replace(/^[ ,।]+/, "");
+        return summary;
+      }
+
+      function safeOrderScriptSlug(value) {
+        const ascii = String(value || "").replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+        return ascii || "generated_orders";
+      }
+
+      function simpleOrderHash(value) {
+        let hash = 2166136261;
+        for (const character of String(value || "")) {
+          hash ^= character.codePointAt(0);
+          hash = Math.imul(hash, 16777619);
+        }
+        return (hash >>> 0).toString(36);
+      }
+
+      function buildOrderDataScript(source, sourceLabel) {
+        const parts = splitCourtOrderText(source);
+        if (!parts.length || !parts.every((part) => /(?:इति|ईति)\s*(?:संवत्?|सम्वत्?|संम्वत्?|सम्बत्?)/i.test(part))) {
+          throw new Error("हरेक आदेशको अन्त्यमा ‘इति संवत’ वा ‘ईति संवत’ भएको TXT राख्नुहोस्।");
+        }
+        const originalFile = sourceLabel || "pasted_orders.txt";
+        const originalStem = originalFile.replace(/\.[^.]+$/, "") || "pasted_orders";
+        const orders = parts.map((content, index) => {
+          const numbers = extractOrderNumbers(content);
+          const subjects = extractOrderSubjects(content);
+          const parties = extractOrderParties(content);
+          const header = extractOrderHeader(content);
+          const body = extractOrderBody(content);
+          const category = inferOrderCategory(content, body);
+          const categoryName = `${category.nepali}_${category.english}`;
+          const file = `${categoryName}_${originalStem}_${index + 1}.txt`;
+          return {
+            id: `generated-${category.english}-${index + 1}-${simpleOrderHash(content)}`,
+            category: categoryName,
+            categoryNepali: category.nepali,
+            categoryEnglish: category.english,
+            originalFile,
+            sourceIndex: index + 1,
+            sourceOrderName: file,
+            file,
+            path: "",
+            petitionNumber: numbers.petitionNumber,
+            caseNumber: numbers.caseNumber,
+            orderDate: extractOrderDate(content),
+            petitionSubject: subjects.petitionSubject,
+            caseName: subjects.caseName,
+            subject: subjects.petitionSubject || subjects.caseName || category.nepali,
+            petitioner: parties.petitioner,
+            respondent: parties.respondent,
+            judgeName: header.judgeName,
+            court: header.court,
+            judge: header.judge,
+            summary: summarizeOrderBody(body),
+            bodyPreview: cleanText(body).slice(0, 700),
+            searchAliases: [category.nepali, category.english, originalFile],
+            content
+          };
+        });
+        const categories = Array.from(new Set(orders.map((order) => order.categoryEnglish)));
+        const sourceSlug = safeOrderScriptSlug(originalStem);
+        const basename = categories.length === 1 ? `${categories[0]}_${sourceSlug}` : sourceSlug;
+        const filename = `order_data_${basename}.js`;
+        const payload = JSON.stringify(orders, null, 2).replace(/</g, "\\u003c");
+        const script = `(function (root) {\n  "use strict";\n\n  const data = root.KDC_ORDER_DATA = root.KDC_ORDER_DATA || {\n    schemaVersion: 5,\n    title: "अदालत — आदेश प्रकार अनुसार अभिलेख",\n    court: ${JSON.stringify(orders[0].court || "काठमाडौं जिल्ला अदालत")},\n    displayPolicy: {\n      number: "FN निवेदन नम्बर पहिले; मूल मुद्दा नम्बर भए कोष्ठकमा",\n      subject: "निवेदन विषय पहिले; मुद्दाको नाम भए कोष्ठकमा",\n      judge: "श्रीसहित नाम; अदालतको नाम कोष्ठकमा",\n      smartSearch: "छानिएको TXT को पूरा content मात्र"\n    },\n    categoryDataFiles: [],\n    orders: []\n  };\n\n  const categoryDataFile = ${JSON.stringify(filename)};\n  if (!data.categoryDataFiles.includes(categoryDataFile)) data.categoryDataFiles.push(categoryDataFile);\n  const categoryOrders = ${payload};\n  categoryOrders.forEach((order) => {\n    if (!data.orders.some((item) => item.id === order.id)) data.orders.push(order);\n  });\n})(window);\n`;
+        return { script, filename, orders };
+      }
+
+      function runOrderScriptGeneration() {
+        try {
+          const result = buildOrderDataScript(sourceCode, fileName.textContent || "pasted_orders.txt");
+          outputMode = "orders";
+          generatedScriptFilename = result.filename;
+          generatedOrderCount = result.orders.length;
+          outputCode = result.script;
+          sourceOutput.value = outputCode;
+          const categoryTotal = new Set(result.orders.map((order) => order.category)).size;
+          inputSizeStat.textContent = formatBytes(new Blob([sourceCode]).size);
+          retainedCount.textContent = toNepaliDigits(result.orders.length);
+          removedCount.textContent = toNepaliDigits(categoryTotal);
+          outputSize.textContent = formatBytes(new Blob([outputCode]).size);
+          causeListDateStat.textContent = result.filename;
+          selectedRowCount.textContent = toNepaliDigits(result.orders.length);
+          setOutputControls("orders");
+          outputEmpty.classList.add("hidden");
+          outputReady.classList.remove("hidden");
+          inlinePreview.srcdoc = "";
+          inlinePreview.classList.add("hidden");
+          monthlyPreview.replaceChildren();
+          monthlyPreview.classList.add("hidden");
+          outputStatus.textContent = `${toNepaliDigits(result.orders.length)} आदेश छुट्याएर ${result.filename} तयार भयो। एउटै script भित्र सबै order records समावेश छन्।`;
+          outputStatus.className = "status success";
+          clearBtn.disabled = false;
+          resetCopyButton();
+          saveInputSession({ causeDate: "" });
+          broadcastRealtimePreview("order-data");
+        } catch (error) {
+          outputMode = "orders";
+          outputCode = "";
+          sourceOutput.value = "";
+          outputReady.classList.add("hidden");
+          outputEmpty.classList.remove("hidden");
+          outputStatus.textContent = error.message || "Order data script बनाउन सकिएन।";
+          outputStatus.className = "status error";
+        }
+      }
+
+      function runFilter() {
+        sourceCode = sourceInput.value || sourceCode;
+        if (!sourceCode.trim()) {
+          showInputError("पहिले source code राख्नुहोस्।");
+          return;
+        }
+
+        inputMode = detectInputMode(sourceCode);
+        updateInputModeUI();
+        if (inputMode === "orders") {
+          runOrderScriptGeneration();
+          return;
+        }
+
+        try {
+          outputMode = "causelist";
+          setOutputControls("causelist");
+          captureRowFilterInputs();
+          monthlyOutputs = [];
+          activeMonthKey = "";
+          monthlyManifestResources = {};
+          monthlyReceivedDates = new Set();
+          inlinePreview.classList.remove("is-monthly");
+          inlinePreview.classList.remove("hidden");
+          monthlyPreview.replaceChildren();
+          monthlyPreview.classList.add("hidden");
+          const result = filterSource(sourceCode);
+          outputCode = result.html;
+          sourceOutput.value = outputCode;
+          retainedCount.textContent = toNepaliDigits(result.retainedBenches);
+          removedCount.textContent = toNepaliDigits(result.removedBenches);
+          inputSizeStat.textContent = formatBytes(new Blob([sourceCode]).size);
+          outputSize.textContent = formatBytes(new Blob([outputCode]).size);
+          causeListDateStat.textContent = result.causeDate || "—";
+          selectedRowCount.textContent = toNepaliDigits(result.selectedRows);
+          outputEmpty.classList.add("hidden");
+          outputReady.classList.remove("hidden");
+          inlinePreview.srcdoc = outputCode;
+          const dispositionNote = result.removedDispositionRows
+            ? ` ‘हेर्न नभ्याइने’ वा ‘स्थगित’ भएका ${toNepaliDigits(result.removedDispositionRows)} मुद्दा हटाइए।`
+            : "";
+          const rowFilterNote = result.explicitlyFilteredTables
+            ? ` ${toNepaliDigits(result.explicitlyFilteredTables)} table मा serial filter लागू गरी ${toNepaliDigits(result.removedRequestedRows)} अन्य row हटाइए।`
+            : " सबै causelist tables मा ALL लागू छ।";
+          const unmatchedNote = result.unmatchedRowSerials.length
+            ? ` नभेटिएका serial—${result.unmatchedRowSerials.join("; ")}।`
+            : "";
+          outputStatus.textContent = `Filter सफल भयो—${targetName}को इजलास सुरक्षित छ।${rowFilterNote}${dispositionNote}${unmatchedNote} मिल्ने order resource भए ‘आदेश हेर्नुहोस्’, नभए ‘आदेश बनाउनुहोस्’ देखिन्छ।`;
+          outputStatus.className = "status success";
+          clearBtn.disabled = false;
+          resetCopyButton();
+          saveInputSession(result);
+          broadcastRealtimePreview("single");
+        } catch (error) {
+          outputCode = "";
+          inlinePreview.srcdoc = "";
+          selectedRowCount.textContent = "०";
+          outputReady.classList.add("hidden");
+          outputEmpty.classList.remove("hidden");
+          outputStatus.textContent = error.message || "Source code filter गर्न सकिएन।";
+          outputStatus.className = "status error";
+          broadcastRealtimePreview("single");
+        }
+      }
+
+      function resetCopyButton() {
+        clearTimeout(copyResetTimer);
+        copyBtn.textContent = "Copy to clipboard";
+        copyBtn.classList.remove("is-copied");
+      }
+
+      async function copyOutput() {
+        if (!outputCode) return;
+        try {
+          await navigator.clipboard.writeText(outputCode);
+        } catch (error) {
+          sourceOutput.focus();
+          sourceOutput.select();
+          document.execCommand("copy");
+        }
+        copyBtn.textContent = "✓ Copied";
+        copyBtn.classList.add("is-copied");
+        copyResetTimer = setTimeout(resetCopyButton, 2200);
+        outputStatus.textContent = outputMode === "orders"
+          ? "Order data script clipboard मा copy भयो।"
+          : "Filtered source code clipboard मा copy भयो।";
+        outputStatus.className = "status success";
+      }
+
+      function downloadBlob(content, filename, type) {
+        const blob = new Blob([content], { type: `${type};charset=utf-8` });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+      }
+
+      function download(extension, type) {
+        if (!outputCode) return;
+        if (outputMode === "orders") {
+          const sourceName = fileName.textContent && /\.txt$/i.test(fileName.textContent)
+            ? fileName.textContent
+            : "court_orders_source.txt";
+          downloadBlob(sourceCode, sourceName, "text/plain");
+          return;
+        }
+        const dateKey = compactBsDate(causeListDateStat.textContent) || loadedCauseDateKey;
+        const fileKey = monthlyOutputs.length && activeMonthKey ? `${activeMonthKey}-all` : (dateKey || "filtered");
+        downloadBlob(outputCode, `index${fileKey}.${extension}`, type);
+      }
+
+      function downloadOrderDataScript() {
+        if (outputMode !== "orders" || !outputCode) return;
+        downloadBlob(outputCode, generatedScriptFilename, "text/javascript");
+        outputStatus.textContent = `${generatedScriptFilename} डाउनलोड भयो—${toNepaliDigits(generatedOrderCount)} आदेश समावेश छन्।`;
+        outputStatus.className = "status success";
+      }
+
+      function buildIndexManifest() {
+        if (monthlyOutputs.length) {
+          const rowKeys = Object.keys(monthlyManifestResources).sort();
+          if (!rowKeys.length) throw new Error("पेशी सूचीका rows अझै लोड हुँदैछन्। केही क्षणपछि पुनः Download .json थिच्नुहोस्।");
+          const allResources = {};
+          rowKeys.forEach((key) => { allResources[key] = monthlyManifestResources[key]; });
+          return { version: 1, resources: allResources };
+        }
+        const parser = new DOMParser();
+        const serialCodes = {
+          "क":"ka","ख":"kha","ग":"ga","घ":"gha","ङ":"nga",
+          "च":"cha","छ":"chha","ज":"ja","झ":"jha","ञ":"nya",
+          "ट":"tta","ठ":"ttha","ड":"dda","ढ":"ddha","ण":"nna",
+          "त":"ta","थ":"tha","द":"da","ध":"dha","न":"na",
+          "प":"pa","फ":"pha","ब":"ba","भ":"bha","म":"ma"
+        };
+        const twoDigits = (value) => String(Number(toAsciiDigits(value).replace(/\D/g, "") || 1)).padStart(2, "0");
+        const serialCode = (value) => {
+          const raw = cleanText(value).replace(/[.।\s]+/g, "");
+          const ascii = toAsciiDigits(raw);
+          return /^\d+$/.test(ascii) ? String(Number(ascii)) : (serialCodes[raw] || "");
+        };
+        const headingMatch = (value, labels) => {
+          const normalized = normalize(value);
+          return labels.some((label) => normalized.includes(normalize(label)));
+        };
+        const headerMap = (table) => {
+          let best = null;
+          Array.from(table.rows || []).slice(0, 5).forEach((row) => {
+            const cells = Array.from(row.cells || []);
+            const score = cells.filter((cell) => headingMatch(cell.textContent, ["कैफियत","मुद्दा","निवेदन","वादी","प्रतिवादी","विषय","दर्ता"])).length;
+            if (!best || score > best.score) best = { row, cells, score };
+          });
+          if (!best || best.score < 2) return null;
+          const map = {};
+          best.cells.forEach((cell, index) => {
+            const heading = cleanText(cell.textContent);
+            if (headingMatch(heading, ["क्र. स.","क्र.सं.","क्रम संख्या","सि.न.","सि.नं."])) map.serial = index;
+            else if (headingMatch(heading, ["कैफियत","कै."])) map.remarks = index;
+            else if (headingMatch(heading, ["मुद्दा न","मुद्दा नं","मुद्दा नम्बर","निवेदन न","निवेदन नं","रजिष्ट्रेशन","रजिस्ट्रेशन"])) map.caseNo = index;
+          });
+          return Number.isInteger(map.remarks) && Number.isInteger(map.caseNo) ? { map, headerRow: best.row } : null;
+        };
+        const cell = (row, index) => Number.isInteger(index) && row.cells[index] ? cleanText(row.cells[index].textContent) : "";
+        const resources = {};
+
+        const singleDateKey = compactBsDate(causeListDateStat.textContent) ||
+          compactBsDate(extractSourceMeta(outputCode).causeDate) || loadedCauseDateKey;
+        const sources = [{ html: outputCode, dateKey: singleDateKey }];
+
+        sources.forEach((source) => {
+          const dateKey = compactBsDate(source.dateKey) || compactBsDate(extractSourceMeta(source.html).causeDate);
+          if (!dateKey) return;
+          const doc = parser.parseFromString(source.html, "text/html");
+          Array.from(doc.querySelectorAll("table")).forEach((table) => {
+            const info = headerMap(table);
+            if (!info) return;
+            let currentSerial = "";
+            const serialRows = {};
+            Array.from(table.rows || []).forEach((row) => {
+              if (row === info.headerRow || !row.cells[info.map.remarks]) return;
+              const rowSerial = cell(row, info.map.serial) || currentSerial;
+              const code = serialCode(rowSerial);
+              if (cell(row, info.map.serial)) currentSerial = cell(row, info.map.serial);
+              if (!code || !cell(row, info.map.caseNo)) return;
+              serialRows[code] = (serialRows[code] || 0) + 1;
+              const bench = twoDigits(table.dataset.cobBenchNumber || "1");
+              const causeList = twoDigits(table.dataset.cobCauselistNumber || "1");
+              const stem = [dateKey, bench, causeList, code + "-" + serialRows[code]].join(".");
+              const filename = stem + ".txt";
+              resources[stem] = [{
+                type: "file",
+                path: "order/" + dateKey + "/" + filename,
+                label: filename
+              }];
+            });
+          });
+        });
+
+        if (!Object.keys(resources).length) throw new Error("index.json का लागि कुनै मुद्दा row भेटिएन।");
+        return { version: 1, resources };
+      }
+
+      function downloadIndexJson() {
+        if (!outputCode) return;
+        try {
+          const manifest = buildIndexManifest();
+          const json = JSON.stringify(manifest, null, 2) + "\n";
+          const url = URL.createObjectURL(new Blob([json], { type: "application/json;charset=utf-8" }));
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "index.json";
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1500);
+          outputStatus.textContent = "सम्बन्धित index.json डाउनलोड भयो—प्रत्येक row मा एउटा default .txt file राखिएको छ।";
+          outputStatus.className = "status success";
+        } catch (error) {
+          outputStatus.textContent = error.message || "index.json तयार गर्न सकिएन।";
+          outputStatus.className = "status error";
+        }
+      }
+
+      function previewOutput() {
+        if (!outputCode) return;
+        const preview = window.open("", "_blank");
+        if (preview) {
+          preview.document.open();
+          preview.document.write(outputCode);
+          preview.document.close();
+          preview.opener = null;
+        }
+        if (!preview) {
+          outputStatus.textContent = "Preview रोकिएको छ। Browser को pop-up अनुमति दिनुहोस्।";
+          outputStatus.className = "status error";
+        }
+      }
+
+      function clearAll() {
+        sourceCode = "";
+        outputCode = "";
+        inputMode = "causelist";
+        outputMode = "causelist";
+        generatedScriptFilename = "order_data_generated_orders.js";
+        generatedOrderCount = 0;
+        loadedCauseDateKey = "";
+        monthlyOutputs = [];
+        activeMonthKey = "";
+        monthlyManifestResources = {};
+        monthlyReceivedDates = new Set();
+        sourceInput.value = "";
+        sourceOutput.value = "";
+        inlinePreview.srcdoc = "";
+        inlinePreview.classList.remove("is-monthly");
+        inlinePreview.classList.remove("hidden");
+        monthlyPreview.replaceChildren();
+        monthlyPreview.classList.add("hidden");
+        fileInput.value = "";
+        fileName.textContent = "";
+        filterBtn.disabled = false;
+        rowFilterToggle.disabled = true;
+        clearBtn.disabled = true;
+        outputReady.classList.add("hidden");
+        outputEmpty.classList.remove("hidden");
+        inputStatus.textContent = "HTML वा TXT फाइल छान्नुहोस्, अथवा code paste गर्नुहोस्।";
+        inputStatus.className = "status";
+        outputStatus.textContent = "";
+        outputStatus.className = "status";
+        availableJudges = [DEFAULT_TARGET_NAME];
+        judgeSelect.innerHTML = `<option value="${DEFAULT_TARGET_NAME}">${DEFAULT_TARGET_NAME}</option>`;
+        judgeSelect.value = DEFAULT_TARGET_NAME;
+        updateTargetUI();
+        selectedRowCount.textContent = "०";
+        setOutputControls("causelist");
+        updateInputModeUI();
+        resetRowFilterPanel(true);
+        resetCopyButton();
+        document.dispatchEvent(new CustomEvent("cause-list:field-snapshot"));
+        broadcastRealtimePreview("single");
+      }
+
+      function formatBytes(bytes) {
+        if (bytes < 1024) return `${toNepaliDigits(bytes)} B`;
+        const value = bytes / 1024;
+        if (value < 1024) return `${toNepaliDigits(value.toFixed(value >= 100 ? 0 : 1))} KB`;
+        return `${toNepaliDigits((value / 1024).toFixed(2))} MB`;
+      }
+
+      function toNepaliDigits(value) {
+        const map = "०१२३४५६७८९";
+        return String(value).replace(/\d/g, (digit) => map[Number(digit)]);
+      }
+
+      uploadTab.addEventListener("click", () => setMode("upload"));
+      pasteTab.addEventListener("click", () => setMode("paste"));
+      chooseFile.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", () => readFile(fileInput.files[0]));
+      sourceInput.addEventListener("input", () => syncSource(sourceInput.value));
+      judgeSelect.addEventListener("change", () => {
+        resetRowFilterPanel(true);
+        updateTargetUI();
+        if (monthlyOutputs.length && activeMonthKey === causeMonthSelect.value) loadMonthCauseLists();
+        else if (sourceCode.trim()) runFilter();
+      });
+      rowFilterToggle.addEventListener("click", () => {
+        if (!sourceCode.trim()) {
+          showInputError("पहिले HTML/TXT source राख्नुहोस्।");
+          return;
+        }
+        const open = rowFilterPanel.hidden;
+        rowFilterPanel.hidden = !open;
+        rowFilterToggle.setAttribute("aria-expanded", String(open));
+        if (open) renderRowFilterPanel();
+      });
+      filterBtn.addEventListener("click", runFilter);
+      clearBtn.addEventListener("click", clearAll);
+      causeDateSearchBtn.addEventListener("click", loadCauseListByDate);
+      causeDateSearch.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          loadCauseListByDate();
+        }
+      });
+      causeMonthSelect.addEventListener("change", updateRibbonDates);
+      causeRibbonDateSelect.addEventListener("change", openRibbonCauseList);
+      scanCauseFolder.addEventListener("click", chooseCauseListFolder);
+      causeFolderInput.addEventListener("change", () => scanSelectedFolder(causeFolderInput.files));
+      advancedSearchForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        runAdvancedSearch();
+      });
+      advancedSearchClear.addEventListener("click", () => {
+        closeAdvancedSearchPanel(true);
+        advancedSearchInput.focus();
+      });
+      nepaliNormalizerToggle.addEventListener("change", () => {
+        if (advancedSearchInput.value.trim()) runAdvancedSearch();
+      });
+      smartSearchToggle.addEventListener("change", () => {
+        advancedSearchInput.placeholder = smartSearchToggle.checked
+          ? "Attachment को content खोज्नुहोस्…"
+          : "नाम, मुद्दा नं., पक्ष वा विषय खोज्नुहोस्…";
+        if (advancedSearchInput.value.trim()) runAdvancedSearch();
+      });
+      inputHistorySelect.addEventListener("change", () => {
+        restoreInputHistory.disabled = inputHistorySelect.value === "";
+      });
+      restoreInputHistory.addEventListener("click", restoreSelectedInputSession);
+      window.addEventListener("message", handleMonthlyManifestMessage);
+      missingClose.addEventListener("click", closeMissingCauseList);
+      missingDialog.addEventListener("click", (event) => {
+        if (event.target === missingDialog) closeMissingCauseList();
+      });
+      copyBtn.addEventListener("click", copyOutput);
+      downloadJs.addEventListener("click", downloadOrderDataScript);
+      downloadHtml.addEventListener("click", () => download("html", "text/html"));
+      downloadTxt.addEventListener("click", () => download("txt", "text/plain"));
+      downloadJson.addEventListener("click", downloadIndexJson);
+      previewBtn.addEventListener("click", previewOutput);
+
+      ["dragenter", "dragover"].forEach((eventName) => {
+        dropZone.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          dropZone.classList.add("is-dragging");
+        });
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        dropZone.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          dropZone.classList.remove("is-dragging");
+        });
+      });
+
+      dropZone.addEventListener("drop", (event) => readFile(event.dataTransfer.files[0]));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && missingDialog.classList.contains("is-open")) {
+          closeMissingCauseList();
+          return;
+        }
+        if (event.key === "Escape" && !advancedSearchResults.hidden) {
+          closeAdvancedSearchPanel(false);
+          advancedSearchInput.focus();
+          return;
+        }
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          event.preventDefault();
+          runFilter();
+        }
+      });
+      setOutputControls("causelist");
+      updateInputModeUI();
+      readInputHistory();
+      const openSharedRibbonSearch = () => {
+        const params = new URLSearchParams(location.search);
+        const query = String(params.get("search") || "").trim();
+        if (!query) return;
+        advancedSearchInput.value = query;
+        nepaliNormalizerToggle.checked = params.get("normalizer") !== "0";
+        smartSearchToggle.checked = params.get("smart") === "1";
+        advancedSearchInput.placeholder = smartSearchToggle.checked
+          ? "Attachment को content खोज्नुहोस्…"
+          : "नाम, मुद्दा नं., पक्ष वा विषय खोज्नुहोस्…";
+        runAdvancedSearch(query);
+      };
+      initializeCauseListDiscovery().then(
+        openSharedRibbonSearch,
+        openSharedRibbonSearch,
+      );
+    })();
+  </script>
+  <script id="nepali-proofreader-engine-runtime" src="nepali-proofreader-engine.js"></script>
+  <script id="cause-list-firebase-sync-runtime" defer src="firebase-sync.js"></script>
+</body>
+</html>

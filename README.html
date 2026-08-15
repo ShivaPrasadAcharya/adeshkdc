@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="ne">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>प्रयोग विधि — आदेश प्रकारअनुसार अभिलेख</title>
+    <link rel="stylesheet" href="cause-list-ribbon.css" />
+    <style>
+      :root {
+        --maroon: #741c2b;
+        --deep: #48101a;
+        --gold: #d6a547;
+        --ink: #32282a;
+        --muted: #75696b;
+        --paper: #fffdfa;
+        --line: #e7ddd2;
+        --soft: #f6f0e8;
+        --green: #23743b;
+        --shadow: 0 18px 55px rgba(55, 32, 29, 0.14);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: linear-gradient(135deg, #f4eee7, #fff 50%, #f1e8dc);
+        font:
+          15px/1.75 "Noto Sans Devanagari",
+          "Nirmala UI",
+          system-ui,
+          sans-serif;
+      }
+      a {
+        color: inherit;
+      }
+      .hero {
+        position: relative;
+        overflow: hidden;
+        color: #fff;
+        background: linear-gradient(
+          120deg,
+          var(--deep),
+          var(--maroon) 65%,
+          #9b3a4c
+        );
+        border-bottom: 5px solid var(--gold);
+      }
+      .hero:after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        top: -150px;
+        width: 360px;
+        height: 360px;
+        border: 70px solid rgba(255, 255, 255, 0.06);
+        border-radius: 50%;
+      }
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+        width: min(1080px, calc(100% - 32px));
+        margin: auto;
+        padding: 42px 0 48px;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 8px;
+        color: #f6d991;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+      h1 {
+        max-width: 780px;
+        margin: 0;
+        font-size: clamp(28px, 5vw, 48px);
+        line-height: 1.22;
+      }
+      .lead {
+        max-width: 720px;
+        margin: 14px 0 24px;
+        color: #f4e9e9;
+        font-size: 16px;
+      }
+      .back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 15px;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.1);
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .back:hover,
+      .back:focus-visible {
+        color: #37240e;
+        background: #f5d988;
+        outline: none;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 26px;
+        width: min(1080px, calc(100% - 32px));
+        margin: 30px auto 56px;
+        align-items: start;
+      }
+      .toc {
+        position: sticky;
+        top: 18px;
+        padding: 16px;
+        background: rgba(255, 253, 250, 0.9);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 10px 32px rgba(55, 32, 29, 0.08);
+        backdrop-filter: blur(8px);
+      }
+      .toc strong {
+        display: block;
+        margin: 0 0 8px;
+        color: var(--maroon);
+      }
+      .toc a {
+        display: block;
+        padding: 7px 9px;
+        border-radius: 7px;
+        color: #5f5355;
+        text-decoration: none;
+      }
+      .toc a:hover,
+      .toc a:focus-visible {
+        color: var(--maroon);
+        background: #f6ece7;
+        outline: none;
+      }
+      main {
+        display: grid;
+        gap: 20px;
+      }
+      .card {
+        padding: 24px 26px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 17px;
+        box-shadow: var(--shadow);
+      }
+      h2 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 14px;
+        color: var(--maroon);
+        font-size: 22px;
+        line-height: 1.35;
+      }
+      h3 {
+        margin: 20px 0 8px;
+        color: #4b3438;
+        font-size: 17px;
+      }
+      p {
+        margin: 8px 0;
+      }
+      ol,
+      ul {
+        margin: 8px 0;
+        padding-left: 24px;
+      }
+      li + li {
+        margin-top: 8px;
+      }
+      .steps {
+        display: grid;
+        gap: 11px;
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+      }
+      .steps li {
+        position: relative;
+        min-height: 42px;
+        padding: 8px 10px 8px 52px;
+        background: var(--soft);
+        border-radius: 10px;
+      }
+      .steps li:before {
+        counter-increment: step;
+        content: counter(step);
+        position: absolute;
+        left: 10px;
+        top: 8px;
+        display: grid;
+        place-items: center;
+        width: 31px;
+        height: 31px;
+        color: #fff;
+        background: var(--maroon);
+        border-radius: 50%;
+        font-weight: 900;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .mini {
+        padding: 15px;
+        background: var(--soft);
+        border: 1px solid #eadfd4;
+        border-radius: 11px;
+      }
+      .mini b {
+        display: block;
+        margin-bottom: 4px;
+        color: #57212a;
+      }
+      .mode {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 10px;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .mode:last-child {
+        border-bottom: 0;
+      }
+      .mode strong {
+        color: var(--maroon);
+      }
+      .icons {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 9px;
+        margin-top: 12px;
+      }
+      .icon {
+        display: grid;
+        place-items: center;
+        gap: 6px;
+        min-height: 86px;
+        padding: 10px 5px;
+        text-align: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .symbol {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        color: #fff;
+        background: var(--maroon);
+        border-radius: 50%;
+        font-size: 18px;
+      }
+      .tip {
+        padding: 13px 15px;
+        border-left: 4px solid var(--gold);
+        background: #fff7df;
+        border-radius: 0 10px 10px 0;
+      }
+      code {
+        padding: 2px 6px;
+        color: #61202b;
+        background: #f5e9e8;
+        border-radius: 5px;
+        font:
+          600 0.92em ui-monospace,
+          SFMono-Regular,
+          Consolas,
+          monospace;
+      }
+      .ok {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--green);
+        font-weight: 800;
+      }
+      footer {
+        padding: 20px;
+        text-align: center;
+        color: #7a6e70;
+        font-size: 13px;
+      }
+      @media (max-width: 800px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .toc {
+          position: static;
+        }
+        .toc nav {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+        .toc a {
+          display: inline-block;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .icons {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 480px) {
+        .hero-inner {
+          padding: 30px 0 36px;
+        }
+        .card {
+          padding: 20px 17px;
+        }
+        .mode {
+          grid-template-columns: 1fr;
+          gap: 2px;
+        }
+        .icons {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">अदालती कार्य सहायक · प्रयोग निर्देशिका</p>
+        <h1>आदेशको प्रकारअनुसार अभिलेख हेर्ने सरल तरिका</h1>
+        <p class="lead">
+          आदेशको parent category, sub category, तालिका, आदेश preview र TXT
+          download का मुख्य कामहरू यस पृष्ठमा संक्षेपमा दिइएका छन्।
+        </p>
+        <a class="back" href="orders.html">← आदेश पुस्तकालयमा फर्कनुहोस्</a>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc" aria-label="विषयसूची">
+        <strong>यस पृष्ठमा</strong>
+        <nav>
+          <a href="#start">सुरु गर्ने तरिका</a>
+          <a href="#orderlibrary">आदेश प्रकार र Sub category</a>
+          <a href="#causelist">पेशी सूची हेर्ने</a>
+          <a href="#search">खोज सुविधा</a>
+          <a href="#output">Output बनाउने</a>
+          <a href="#order">आदेश/फैसला</a>
+          <a href="#sync">Realtime Sync</a>
+          <a href="#files">फाइल संरचना</a>
+        </nav>
+      </aside>
+
+      <main>
+        <section class="card" id="start">
+          <h2><span aria-hidden="true">◉</span> सुरु गर्ने तरिका</h2>
+          <ol class="steps">
+            <li>ZIP फाइललाई एउटै folder मा पूर्ण रूपमा extract गर्नुहोस्।</li>
+            <li>
+              Extract भएको folder भित्रको <code>orders.html</code> खोल्नुहोस्।
+            </li>
+            <li>
+              Input/Output पृष्ठबाट जानु छ भने <code>index.html</code> खोली
+              “Skip Input/Output” button थिच्नुहोस्।
+            </li>
+          </ol>
+          <p class="tip">
+            सामान्य local कामका लागि Internet आवश्यक पर्दैन। Firebase realtime
+            sync प्रयोग गर्दा भने Internet चाहिन्छ।
+          </p>
+        </section>
+
+        <section class="card" id="orderlibrary">
+          <h2><span aria-hidden="true">▦</span> आदेश प्रकार र Sub category</h2>
+          <div class="grid">
+            <div class="mini">
+              <b>Parent dropdown</b>यो field मा category लेखेर filter गर्न वा
+              dropdown बाट रोज्न सकिन्छ। Typed filter मा Nepali normalizer स्वतः
+              लागू हुन्छ र मिलेका category मात्र देखिन्छन्। <code>All CATEGORY</code> ले सबै आदेश-समूहलाई
+              छुट्टाछुट्टै तालिकामा देखाउँछ; साथै
+              <code>गैरकानूनीपक्राउरोक_gairkanunipakraurok</code> जस्ता निश्चित
+              समूह पनि रोज्न सकिन्छ।
+            </div>
+            <div class="mini">
+              <b>Sub category</b>Parent समूहभित्रका
+              <code>category_1</code>, <code>category_2</code> जस्ता छोटा item
+              मात्र देखिन्छन्; मूल source filename dropdown मा देखाइँदैन। Rename
+              गरिएको वास्तविक TXT filename मा भने source filename सुरक्षित रहन्छ।
+            </div>
+            <div class="mini">
+              <b>एक TXT = एक row</b>FN निवेदन र मूल मुद्दा दुवै भए FN नम्बर/विषय
+              पहिले र मुद्दा नम्बर/नाम कोष्ठकमा देखिन्छ। compact ६-column
+              तालिकामा नम्बर–विषय, मिति–न्यायाधीश तथा दुवै पक्ष जोडी देखाइन्छन्;
+              पक्षहरूबीच <b>विरुद्ध</b> राखिन्छ। आदेशको सङ्क्षेप पनि सोही row मा
+              रहन्छ। नम्बर–विषय र पक्षको column compact राखी आदेशको सङ्क्षेपलाई
+              ३१% चौडाइ दिइएको छ। न्यायाधीश
+              <code>श्री नाम (काठमाडौं जिल्ला अदालत)</code> ढाँचामा देखिन्छ।
+            </div>
+            <div class="mini">
+              <b>हेर्नुहोस् / डाउनलोड</b>“आदेश हेर्नुहोस्” ले पूर्ण पाठ खोल्छ र
+              “डाउनलोड गर्नुहोस्” ले मूल TXT फाइल दिन्छ। “आदेश हेर्नुहोस्” माथि
+              hover वा keyboard focus गर्दा black background/white text भएको एउटै
+              preview मा header होइन, आदेशको मुख्य body को सुरुको प्रसङ्ग देखिन्छ।
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="causelist">
+          <h2><span aria-hidden="true">▣</span> पेशी सूची हेर्ने</h2>
+          <div class="grid">
+            <div class="mini">
+              <b>महिना</b><code>indexyyyymmdd.html</code> नाम भएका दैनिक फाइलका
+              आधारमा उपलब्ध महिना देखिन्छन्।
+            </div>
+            <div class="mini">
+              <b>मिति</b>मिति छान्दा सम्बन्धित दैनिक webpage खुल्छ। मिति item
+              दैनिक HTML सँग link गरिएको हुन्छ।
+            </div>
+            <div class="mini">
+              <b>ALL</b>छानिएको महिनाका सबै दैनिक मुख्य content कालक्रमअनुसार
+              एउटै scrollable view मा देखिन्छ।
+            </div>
+            <div class="mini">
+              <b>नयाँ दैनिक फाइल</b>नयाँ filename लाई मुख्य
+              <code>index.html</code> को sibling manifest मा link गरेपछि
+              dropdown ले त्यसलाई चिन्छ।
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="search">
+          <h2><span aria-hidden="true">⌕</span> खोज सुविधा</h2>
+          <div class="mode">
+            <strong>स्थायी sticky ribbon</strong
+            ><span
+              >मुख्य पृष्ठ, दैनिक मितिको पृष्ठ, monthly view, Help र generated
+              preview/output webpage सबैमा search, normalizer, smart search,
+              महिना र मिति dropdown भएको ribbon माथि कायम रहन्छ।</span
+            >
+          </div>
+          <div class="mode">
+            <strong>सामान्य खोज</strong
+            ><span
+              >दैनिक webpage का मुद्दा नम्बर, पक्ष, विषय वा अन्य visible content
+              खोज्छ। नतिजा link खोल्दा matching text highlight हुन्छ।</span
+            >
+          </div>
+          <div class="mode">
+            <strong>Nepali normalizer</strong
+            ><span
+              >Checked हुँदा रि/री/ऋ, श/ष/स, व/ब, नासिक्य अक्षर, नेपाली अंक र
+              space का सामान्य भिन्नतालाई मिलाएर खोज्छ।</span
+            >
+          </div>
+          <div class="mode">
+            <strong>स्मार्ट सर्च</strong
+            ><span
+              >आदेश पुस्तकालयमा Checked हुँदा प्रत्येक <code>orders/*.txt</code>
+              फाइलको पूरा content भित्र मात्र खोज्छ र मिलेका शब्दसहित वरिपरिको
+              प्रसङ्गलाई clickable link का रूपमा देखाउँछ। Unchecked हुँदा filename,
+              FN/मुद्दा नम्बर, विषय, पक्ष, न्यायाधीश र सङ्क्षेपजस्ता
+              metadata मा खोजिन्छ।</span
+            >
+          </div>
+          <div class="mode">
+            <strong>Highlight</strong
+            ><span
+              >Checked हुँदा सामान्य search को तालिका, Smart search का contextual
+              links र खुलेको आदेशको पूरा पाठमा matching text पहेँलो चिन्हले
+              देखिन्छ।</span
+            >
+          </div>
+          <div class="mode">
+            <strong>पछिल्ला खोज</strong
+            ><span
+              >“खोज्नुहोस्” थिचेर गरिएका पछिल्ला बढीमा तीन खोज search bar मै
+              फेरि थिच्न मिल्ने गरी देखिन्छन्। यी browser storage मा नराखिने भएकाले
+              page refresh गर्दा search history स्वतः हट्छ।</span
+            >
+          </div>
+          <div class="mode">
+            <strong>Compact data files</strong
+            ><span
+              ><code>order_data_part_01.js</code> देखि
+              <code>order_data_part_04.js</code> सम्मका चार merged JS फाइलमा
+              ७८ category का metadata र १९६ unique आदेशको exact TXT content
+              embedded छ। GitHub upload का लागि physical TXT हटाइए पनि हेर्ने,
+              hover, smart search र मूल filename सहित TXT download सुविधा यथावत् छ।</span
+            >
+          </div>
+        </section>
+
+        <section class="card" id="output">
+          <h2><span aria-hidden="true">⇩</span> Filter तथा Output</h2>
+          <ul>
+            <li>Input table paste गरेपछि judge वा आवश्यक filter छान्नुहोस्।</li>
+            <li>
+              Court-order TXT upload वा paste गर्दा tool ले <code>इति संवत</code>
+              अथवा <code>ईति संवत</code> लाई order-ending मानी एक वा धेरै आदेश
+              छुट्याउँछ र एउटै <code>order_data_*.js</code> script बनाउँछ। Copy,
+              source TXT download र script download button सोहीअनुसार बदलिन्छन्।
+            </li>
+            <li>
+              “श्रीमान् छनोट गर्नुहोस्” को तलको <b>Filter Causelist Tables &amp;
+              Rows</b> खोल्दा चयन गरिएको न्यायाधीशका Table 1, Table 2… स्वतः
+              देखिन्छन्। प्रत्येकमा default <code>ALL</code> हुन्छ। निश्चित rows
+              मात्र राख्न <code>क, ग, २, ४</code> जस्ता serial comma ले छुट्याएर
+              लेख्नुहोस्।
+            </li>
+            <li>
+              Output मा छानिएको judge सँग सम्बन्धित आवश्यक विवरण मात्र राखिन्छ।
+            </li>
+            <li>
+              अन्तिम column मा “हेर्न नभ्याइने” वा “स्थगित” भए त्यस्तो row
+              <code>ALL</code> वा explicit serial selection जुनसुकै भए पनि output
+              मा समावेश हुँदैन। Output summary मा बाँकी rows को संख्या देखिन्छ।
+            </li>
+            <li>
+              आवश्यकतानुसार HTML/TXT/DOCX तथा index JSON download प्रयोग
+              गर्नुहोस्।
+            </li>
+          </ul>
+        </section>
+
+        <section class="card" id="order">
+          <h2><span aria-hidden="true">✎</span> नेपाली अदालती आदेश/फैसला</h2>
+          <ol class="steps">
+            <li>
+              दैनिक table मा सम्बन्धित row को “आदेश बनाउनुहोस्” खोल्नुहोस्।
+            </li>
+            <li>
+              कागजातको प्रकार र पक्षहरूको हैसियत जाँच्नुहोस्। श्रीमान्, मुद्दा
+              नम्बर, मिति र पक्षको नाम source row बाट स्वतः आउँछन्।
+            </li>
+            <li>
+              तलको preview भित्र नै आदेश वा फैसलाको व्यहोरा सिधै लेख्नुहोस् वा
+              paste गर्नुहोस्।
+            </li>
+          </ol>
+
+          <h3>Reverse विकल्प</h3>
+          <div class="mode">
+            <strong>सामान्य</strong
+            ><span>पक्षको नाम र हैसियत दुवै source अनुसार यथावत् रहन्छ।</span>
+          </div>
+          <div class="mode">
+            <strong>Partial reverse</strong
+            ><span
+              >पक्षको <b>नाम मात्र</b> आपसमा साटिन्छ; वादी/प्रतिवादी वा अन्य
+              हैसियत यथावत् रहन्छ।</span
+            >
+          </div>
+          <div class="mode">
+            <strong>Full reverse</strong
+            ><span>पक्षको <b>नाम र हैसियत दुवै</b> आपसमा साटिन्छन्।</span>
+          </div>
+
+          <h3>Floating icon हरू</h3>
+          <div class="icons" aria-label="उपलब्ध कार्य">
+            <div class="icon"><span class="symbol">⌖</span>Pick up</div>
+            <div class="icon"><span class="symbol">⇧</span>Go to Top</div>
+            <div class="icon"><span class="symbol">⚒</span>Tools</div>
+            <div class="icon"><span class="symbol">▣</span>Save</div>
+            <div class="icon"><span class="symbol">⧉</span>Copy</div>
+            <div class="icon"><span class="symbol">T</span>TXT</div>
+            <div class="icon"><span class="symbol">W</span>DOCX</div>
+            <div class="icon"><span class="symbol">▤</span>Print</div>
+            <div class="icon"><span class="symbol">➤</span>SUBMIT</div>
+            <div class="icon"><span class="symbol">⇆</span>COMPARE</div>
+          </div>
+          <p>
+            <span class="ok">✓ हरियो tick</span> देखिएमा सम्बन्धित Save, Copy,
+            Download, Print वा SUBMIT कार्य सफल भएको बुझिन्छ; अतिरिक्त written
+            notice देखाइँदैन।
+          </p>
+          <p class="tip">
+            <b>SUBMIT</b> ले हालको preview user name र timestamp सहित shared
+            history मा राख्छ। प्रत्येक user का पछिल्ला २ वटा submission मात्र
+            global FIFO नियममा रहन्छन्; तेस्रो submission आएपछि सो user को सबैभन्दा
+            पुरानो submission हट्छ। सबै connector का बाँकी submitted file साझा
+            compare सूचीमा देखिन्छन्। <b>COMPARE</b> मा ठीक २ वटा
+            file छानेपछि पुरानो last edited time भएको file “Original” र नयाँ
+            file “Latest” हुन्छ। line break भएको भाग line-wise, अन्य भाग
+            sentence-wise चिनाइन्छ; व्यापक परिवर्तन मात्र पूरै अनुच्छेद पहेँलो
+            हुन्छ। Floating “Files” menu का checkbox बाट filename सहित ठीक २
+            file छानिन्छन् र Comments पनि floating panel मा खुल्छ, त्यसैले
+            comparison area दुवै file ले पूरा उपयोग गर्छ। Default मा Latest file
+            अक्षरशः intact राखी सबै inline changes Original मा देखिन्छन्; “Vice
+            versa” ले Original intact राखी changes Latest मा सार्छ। सम्भव भएसम्म
+            sentence भित्र बदलिएको word मात्र रातो strike र नयाँ word “+” सहित
+            देखिन्छ; असुविधाजनक परिवर्तनमा मात्र sentence/paragraph fallback
+            हुन्छ। Comparison engine मा
+            <a href="https://shivaprasadacharya.github.io/nepalitextproofreader/"
+              >उन्नत नेपाली प्रूफरीडर</a
+            >को smart sentence mapping, Nepali normalizer, merge/split detection,
+            punctuation/minor/substantive classification, mapping confidence र
+            १० भन्दा बढी छुट्टाछुट्टै change-region हुँदा sentence fallback
+            समायोजन गरिएको छ। Floating Comments भित्र summary, search र “मूल
+            परिवर्तन / सूक्ष्म / विरामचिह्न / प्रूफरीड” filters उपलब्ध छन्।
+            Latest submitted text मा दोहोरिएको शब्द, punctuation spacing,
+            multiple spaces, देवनागरी पूर्णविराम, अदृश्य Unicode र सामान्य
+            सम्भावित हिज्जे जाँच गरी छुट्टै ✓ प्रूफरीड सुझाव देखिन्छ। Change
+            comment click/keyboard बाट सम्बन्धित inline स्थानमा focus हुन्छ।
+            <b>Go to Top</b> ले preview को माथिल्लो भागमा पुर्‍याउँछ र
+            location icon भएको <b>Pick from where you left</b> ले सुरक्षित
+            cursor राखी त्यसै बिन्दुमा smooth auto-scroll गर्छ। सबै floating
+            icon black/white छन् र Resume/Top, Save/Copy, download/print तथा
+            Submit/Compare को workflow क्रममा राखिएका छन्। फैसला preview मा “इति
+            संवत्…” अब “कम्प्युटर अपरेटर-” को ठीक मुनि आउँछ। कागजातको प्रकार,
+            पक्षहरूको हैसियत वा सामान्य/Partial reverse/Full reverse परिवर्तन
+            गर्दा preview को user-edited मुख्य व्यहोरा जस्ताको तस्तै रहन्छ र
+            placeholder/default content मा फर्किँदैन। Icon हरू सानो बनाइएका छन्।
+            Floating <b>Tools</b> बाट cursor वा selected line/paragraph मा
+            <b>Ascend indent</b> (tab घटाउने), <b>Descend indent</b> (tab थप्ने),
+            bullet हटाउने/थप्ने र subbullet घटाउने/थप्ने सुविधा छ। Ascend वा
+            Descend गर्दा विद्यमान bullet/subbullet यथावत् रहन्छ। Bulleted line
+            को अन्त्यमा Enter थिच्दा समान bullet र indent सहित अर्को item
+            स्वतः तयार हुन्छ। Continuous slider ले ९–२४ pt सम्म सम्पूर्ण preview को
+            text size बदल्छ (default १३ pt)। यी tab, bullet, subbullet र text
+            size DOCX download मा पनि यथावत् रहन्छन्।
+          </p>
+        </section>
+
+        <section class="card" id="sync">
+          <h2><span aria-hidden="true">↻</span> Firebase Realtime Sync</h2>
+          <ol class="steps">
+            <li>
+              बायाँ तलको “Realtime Sync” button खोल्नुहोस्। आफ्नो नाम लेखी पहिलो
+              device मा “नयाँ code” थिच्नुहोस्।
+            </li>
+            <li>
+              देखिएको ३-अङ्कको passkey अर्को device मा नामसहित राखेर “Connect”
+              थिच्नुहोस्। एउटै passkey मा अधिकतम ३ connector मात्र जोडिन सक्छन्।
+            </li>
+            <li>
+              अब main form, filtered output, editable आदेश/फैसला preview र
+              submitted history realtime sync हुन्छन्।
+            </li>
+            <li>
+              “Connector chat” बाट सोही passkey मा जोडिएका user बीच text chat
+              र file attachment पठाउन सकिन्छ; सन्देश/attachment बढीमा ९ घण्टा
+              मात्र रहन्छ। Paperclip बाट बढीमा ५ MB file छानिन्छ। Chat मा
+              extension सहित attached file को original नाम देखिन्छ र त्यसमा
+              click गर्दा त्यही नाममा तुरुन्त download हुन्छ। Chat default dark
+              mode मा खुल्छ र ☾/☀ बाट dark/light बदल्न सकिन्छ। दुवै दिशाबाट
+              आउने नयाँ remote message मा in-page notification र unread badge
+              देखिन्छ; 🔔 बाट browser notification अनुमति दिए system
+              notification पनि आउँछ। Chat सधैँ नयाँ message तर्फ auto-scroll
+              हुन्छ। Message box text अनुसार auto-wrap/auto-grow हुन्छ र सानो
+              arrow button ले send गर्छ। Sender को message receiver device मा
+              पुगेपछि ✓ र receiver ले chat खोली पढेपछि ✓✓ देखिन्छ।
+            </li>
+            <li>
+              काम सकिएपछि “Disconnect” थिच्नुहोस्। पछिल्लो code यही browser मा
+              मात्र सम्झिइन्छ।
+            </li>
+          </ol>
+          <div class="grid">
+            <div class="mini">
+              <b>Case-wise preview</b>हरेक “आदेश बनाउनुहोस्” row को preview
+              छुट्टै key मा राखिन्छ; एउटा मुद्दाको व्यहोरा अर्को मुद्दामा
+              मिसिँदैन।
+            </div>
+            <div class="mini">
+              <b>Offline fallback</b>Firebase वा network उपलब्ध नभए local
+              editing, Save, Copy र downloads पुरानै तरिकाले चलिरहन्छन्।
+            </div>
+            <div class="mini">
+              <b>File upload</b>Browser security का कारण selected local file का
+              bytes sync हुँदैनन्। File बाट पढिएको source text भने form state
+              सँग sync हुन्छ।
+            </div>
+            <div class="mini">
+              <b>Last-write wins</b>दुवै device मा एउटै field एकैपटक बदल्दा
+              अन्तिम Firebase update देखाइन्छ।
+            </div>
+            <div class="mini">
+              <b>Shared submission</b>एउटा connector ले SUBMIT गरेको file अर्को
+              connector को COMPARE सूचीमा पनि तुरुन्त देखिन्छ।
+            </div>
+            <div class="mini">
+              <b>Connector limit</b>Transaction-based slot ले एउटै passkey मा
+              बढीमा ३ सक्रिय user मात्र स्वीकार गर्छ।
+            </div>
+          </div>
+          <p class="tip">
+            यो login-विहीन code-based sync हो। Sync code विश्वासिलो व्यक्तिसँग
+            मात्र बाँड्नुहोस् र Firebase Realtime Database rules उपयुक्त
+            राख्नुहोस्।
+          </p>
+        </section>
+
+        <section class="card" id="files">
+          <h2><span aria-hidden="true">⌂</span> आवश्यक फाइल संरचना</h2>
+          <ul>
+            <li>दैनिक फाइल: <code>indexyyyymmdd.html</code></li>
+            <li>Attachment manifest: <code>order/index.json</code></li>
+            <li>
+              Realtime sync: <code>firebase-sync.js</code> र
+              <code>firebase-sync.css</code>
+            </li>
+            <li>
+              Comparison/proofreading engine:
+              <code>nepali-proofreader-engine.js</code>
+            </li>
+            <li>
+              Attachment path मा forward slash (<code>/</code>) र backward slash
+              (<code>\</code>) दुवै स्वीकार हुन्छन्।
+            </li>
+            <li>
+              एउटै JSON को duplicate copy नराख्नुहोस्; मुख्य
+              <code>order/index.json</code> मात्र प्रयोग गर्नुहोस्।
+            </li>
+            <li>
+              Folder वा filename परिवर्तन गर्दा JSON र HTML मा रहेको relative
+              link पनि मिलाउनुहोस्।
+            </li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      पेशी सूची तथा नेपाली अदालती आदेश/फैसला सहायक · Local-first तथा Firebase
+      realtime sync
+    </footer>
+    <script src="cause-list-ribbon.js"></script>
+  </body>
+</html>

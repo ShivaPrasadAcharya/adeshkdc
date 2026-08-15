@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ne">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>आदेश प्रकारअनुसार अभिलेख</title>
+  <link rel="shortcut icon" type="image/x-icon" href="https://www.supremecourt.gov.np/cp/assets/favicon.ico" />
+  <meta name="description" content="काठमाडौं जिल्ला अदालतका आदेश प्रकारअनुसार खोज्ने, हेर्ने र डाउनलोड गर्ने अभिलेख" />
+  <link rel="stylesheet" href="https://supremecourt.gov.np/weekly_dainik/assets/main.css" type="text/css" media="all" />
+  <style id="cause-list-output-adjustments" type="text/css">#tab1{display:block!important}</style>
+  <link id="cause-list-ribbon-style" rel="stylesheet" href="cause-list-ribbon.css" />
+  <link id="court-order-builder-style" rel="stylesheet" href="cause-list-runtime.css" />
+  <link id="cause-list-firebase-sync-style" rel="stylesheet" href="firebase-sync.css" />
+  <link id="order-library-style" rel="stylesheet" href="order-library.css" />
+</head>
+<body>
+  <nav id="causePersistentRibbon" class="cpr-ribbon order-ribbon" aria-label="आदेश प्रकार खोज तथा navigation">
+    <div class="cpr-inner">
+      <form class="cpr-search" id="orderSearchForm" role="search">
+        <label class="sr-only" for="orderSearchInput">आदेशमा खोज्नुहोस्</label>
+        <input type="search" id="orderSearchInput" name="search" autocomplete="off" placeholder="FN/मुद्दा नं., पक्ष, विषय वा आदेशको पाठ खोज्नुहोस्…" aria-label="आदेशमा खोज्नुहोस्" />
+        <span class="cpr-options">
+          <label class="cpr-check" title="Nepali spelling variants मिलाएर खोज्छ">
+            <input type="checkbox" id="orderNormalizer" name="normalizer" checked="checked" />
+            <span>Normalizer</span>
+          </label>
+          <label class="cpr-check" title="TXT फाइलको पूरा content भित्र खोज्छ">
+            <input type="checkbox" id="orderSmartSearch" name="smart" />
+            <span>Smart</span>
+          </label>
+          <label class="cpr-check" title="मिलेको शब्दलाई तालिका, result snippet र आदेशको पाठमा highlight गर्छ">
+            <input type="checkbox" id="orderHighlight" name="highlight" checked="checked" />
+            <span>Highlight</span>
+          </label>
+        </span>
+        <button type="submit">खोज्नुहोस्</button>
+        <span id="orderSearchHistory" class="order-search-history" aria-label="पछिल्ला तीन खोज" hidden="hidden">
+          <span class="order-search-history-label">पछिल्ला खोज:</span>
+          <span id="orderSearchHistoryList" class="order-search-history-list"></span>
+        </span>
+      </form>
+      <div class="cpr-nav">
+        <label for="orderCategoryInput">आदेशको प्रकार</label>
+        <span class="order-category-combobox">
+          <input type="search" id="orderCategoryInput" list="orderCategorySuggestions" autocomplete="off" placeholder="लेखेर category filter गर्नुहोस्…" aria-controls="orderCategorySelect orderSubcategorySelect" />
+          <datalist id="orderCategorySuggestions"></datalist>
+          <select id="orderCategorySelect" aria-label="मिलेका आदेशका प्रकार" aria-controls="orderSubcategorySelect">
+            <option value="">आदेशको प्रकार खोजिँदैछ…</option>
+          </select>
+        </span>
+        <label for="orderSubcategorySelect">Sub category</label>
+        <select id="orderSubcategorySelect" disabled="disabled">
+          <option value="">पहिला आदेशको प्रकार रोज्नुहोस्</option>
+        </select>
+      </div>
+      <a class="cpr-link" href="index.html" title="Input/Output पृष्ठ">⇄ Input/Output</a>
+      <a class="cpr-link" href="README.html" title="प्रयोग विधि">ⓘ Help</a>
+      <span class="cpr-current" aria-label="हालको पृष्ठ">आदेश पुस्तकालय</span>
+    </div>
+  </nav>
+
+  <div id="wrapper">
+    <div id="content_wrapper">
+      <style type="text/css">
+        body { font-family: kalimati, "Noto Sans Devanagari", "Nirmala UI", Mangal, sans-serif; }
+        dl { margin-bottom:50px; width:50%; float:left; }
+        dl dt { line-height:30px; background:#FFDCCB; color:#000; float:left; font-weight:bold; margin-right:10px; height:40px; width:200px; font-size:14px; padding-left:10px; }
+        dl dd { height:30px; padding:5px 0; margin:1px; background:#FAF5DA; font-size:14px; }
+      </style>
+      <div class="onecolumn">
+        <div class="content" id="tab1">
+          <form action="#" method="get" id="form1" onsubmit="return false;">
+            <table width="100%" class="global" style="border:1px solid #CCC;">
+              <tbody>
+                <tr>
+                  <td width="273">&nbsp;</td>
+                  <td width="143"><label>अभिलेख:</label></td>
+                  <td width="535">
+                    <strong id="selectedScopeText">आदेशको प्रकार अनुसार</strong>
+                    <span class="scope-help"> — माथिको dropdown बाट प्रकार वा sub category रोज्नुहोस्।</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td><td></td>
+                  <td><a class="button_dark order-reset-link" href="orders.html">सबै आदेश हेर्नुहोस्</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
+          <br />
+          <div class="pageTitle">आदेश प्रकारअनुसार अभिलेख</div>
+          <center><span id="orderSearchStatus" class="order-search-status" aria-live="polite"></span></center>
+          <section id="smartResultPanel" class="smart-result-panel" aria-labelledby="smartResultTitle" hidden="hidden">
+            <div class="smart-result-head">
+              <strong id="smartResultTitle">TXT content मा भेटिएका प्रसङ्ग</strong>
+              <span id="smartResultCount"></span>
+            </div>
+            <div id="smartResultList" class="smart-result-list"></div>
+          </section>
+          <br />
+          <table class="record_display order-summary" width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tbody>
+              <tr>
+                <th>आदेशको समूह</th>
+                <th>देखाइएका आदेश</th>
+                <th>उपलब्ध TXT</th>
+                <th>खोज प्रकार</th>
+                <th>कार्य</th>
+              </tr>
+              <tr>
+                <td id="summaryCategoryCount">०</td>
+                <td id="orderResultCount">०</td>
+                <td id="summaryFileCount">०</td>
+                <td id="summarySearchMode">Normalizer</td>
+                <td>हेर्नुहोस् / डाउनलोड</td>
+              </tr>
+            </tbody>
+          </table>
+          <br /><br /><br />
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tbody>
+              <tr>
+                <td align="center" valign="center" colspan="3"><strong><span style="font-family:kalimati;">काठमाडौं जिल्ला अदालतको</span></strong></td>
+              </tr>
+              <tr>
+                <td align="center" valign="center" colspan="3"><span style="font-family:kalimati;"><strong>आदेश प्रकारअनुसार अभिलेख</strong></span></td>
+              </tr>
+              <tr><td colspan="3" align="center" valign="top"></td></tr>
+            </tbody>
+          </table>
+          <meta http-equiv="Content-Type" content="application/ms-word; charset=utf-8" />
+          <style type="text/css">
+            .judge { float:right; font-size:15px; color:#b41c1c; margin-right:41px; text-align:center; }
+          </style>
+          <br />
+          <table width="100%" cellspacing="0" cellpadding="5" style="border-collapse:collapse">
+            <tbody>
+              <tr bgcolor="#FFFFFF">
+                <td align="right"><b>आदेश अभिलेख</b></td>
+                <td align="left" colspan="6" class="judge"><b id="orderTableHeading">आदेशको प्रकार अनुसार</b></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div id="orderTables" aria-live="polite"></div>
+          <br class="clear" /><br class="clear" />
+        </div>
+      </div>
+      <br class="clear" />
+    </div>
+  </div>
+  <br class="clear" />
+  <a href="#" class="scrollup" style="display:block;">Scroll</a>
+  <div id="footer"> © Copyright 2026 by Supreme Court of Nepal. All Right Reserved. </div>
+
+  <template id="orderTableTemplate">
+    <section class="order-category-block">
+      <h2 class="order-category-title"></h2>
+      <table cellspacing="0" class="record_display order-record-table" cellpadding="5" border="1" style="border-collapse:collapse">
+        <thead>
+          <tr>
+            <th width="4%">क्र. स.</th>
+            <th width="18%">FN निवेदन नं. तथा विषय<br />(मुद्दा नं. तथा मुद्दाको नाम)</th>
+            <th width="17%">आदेश मिति तथा<br />इजलास/न्यायाधीश</th>
+            <th width="24%">निवेदक/वादी <strong>विरुद्ध</strong> विपक्षी/प्रतिवादी</th>
+            <th width="31%">आदेशको सङ्क्षेप</th>
+            <th width="6%">कार्य</th>
+          </tr>
+        </thead>
+        <tbody class="order-rows"></tbody>
+      </table>
+    </section>
+  </template>
+
+  <div class="order-modal" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle" hidden="hidden">
+    <section class="order-modal-card">
+      <header class="order-modal-head">
+        <h2 id="orderModalTitle">आदेश</h2>
+        <button type="button" class="order-modal-close" id="orderModalClose" aria-label="आदेश बन्द गर्नुहोस्">×</button>
+      </header>
+      <pre class="order-paper" id="orderModalContent"></pre>
+      <footer class="order-modal-actions">
+        <button type="button" class="modal-button primary" id="orderModalCopy">आदेश Copy गर्नुहोस्</button>
+        <a class="modal-button" id="orderModalDownload" href="#" download="download">डाउनलोड गर्नुहोस्</a>
+        <button type="button" class="modal-button" onclick="window.print()">Print</button>
+        <button type="button" class="modal-button" id="orderModalDismiss">बन्द गर्नुहोस्</button>
+      </footer>
+    </section>
+  </div>
+
+  <aside id="orderHoverPreview" class="order-hover-preview" role="tooltip" hidden="hidden"></aside>
+
+  <script id="cause-list-config" type="application/json">{"selectedJudge":"","judges":[],"court":"काठमाडौं जिल्ला अदालत","orderRoot":"orders"}</script>
+  <script id="cause-list-ribbon-runtime" src="cause-list-ribbon.js"></script>
+  <script id="nepali-proofreader-engine-runtime" src="nepali-proofreader-engine.js"></script>
+  <script src="order_data_part_01.js"></script>
+  <script src="order_data_part_02.js"></script>
+  <script src="order_data_part_03.js"></script>
+  <script src="order_data_part_04.js"></script>
+  <script src="order-library.js"></script>
+</body>
+</html>
