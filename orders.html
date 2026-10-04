@@ -1,17 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="ne">
+<!doctype html>
+<html lang="ne">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>आदेश प्रकारअनुसार अभिलेख</title>
   <link rel="shortcut icon" type="image/x-icon" href="https://www.supremecourt.gov.np/cp/assets/favicon.ico" />
   <meta name="description" content="काठमाडौं जिल्ला अदालतका आदेश प्रकारअनुसार खोज्ने, हेर्ने र डाउनलोड गर्ने अभिलेख" />
-  <link rel="stylesheet" href="https://supremecourt.gov.np/weekly_dainik/assets/main.css" type="text/css" media="all" />
   <style id="cause-list-output-adjustments" type="text/css">#tab1{display:block!important}</style>
   <link id="cause-list-ribbon-style" rel="stylesheet" href="cause-list-ribbon.css" />
   <link id="court-order-builder-style" rel="stylesheet" href="cause-list-runtime.css" />
   <link id="cause-list-firebase-sync-style" rel="stylesheet" href="firebase-sync.css" />
-  <link id="order-library-style" rel="stylesheet" href="order-library.css" />
+  <link id="order-library-style" rel="stylesheet" href="order-library.css?v=auto-library-1" />
 </head>
 <body>
   <nav id="causePersistentRibbon" class="cpr-ribbon order-ribbon" aria-label="आदेश प्रकार खोज तथा navigation">
@@ -39,119 +38,56 @@
           <span id="orderSearchHistoryList" class="order-search-history-list"></span>
         </span>
       </form>
-      <div class="cpr-nav">
-        <label for="orderCategoryInput">आदेशको प्रकार</label>
-        <span class="order-category-combobox">
-          <input type="search" id="orderCategoryInput" list="orderCategorySuggestions" autocomplete="off" placeholder="लेखेर category filter गर्नुहोस्…" aria-controls="orderCategorySelect orderSubcategorySelect" />
-          <datalist id="orderCategorySuggestions"></datalist>
-          <select id="orderCategorySelect" aria-label="मिलेका आदेशका प्रकार" aria-controls="orderSubcategorySelect">
-            <option value="">आदेशको प्रकार खोजिँदैछ…</option>
-          </select>
-        </span>
-        <label for="orderSubcategorySelect">Sub category</label>
-        <select id="orderSubcategorySelect" disabled="disabled">
-          <option value="">पहिला आदेशको प्रकार रोज्नुहोस्</option>
-        </select>
-      </div>
+      <a class="cpr-link order-add-files" href="https://github.com/ShivaPrasadAcharya/adeshkdc/upload/main/orders" target="_blank" rel="noopener noreferrer" title="GitHub मा नयाँ आदेश फाइल थप्नुहोस्">＋ Add files</a>
       <a class="cpr-link" href="index.html" title="Input/Output पृष्ठ">⇄ Input/Output</a>
       <a class="cpr-link" href="README.html" title="प्रयोग विधि">ⓘ Help</a>
-      <span class="cpr-current" aria-label="हालको पृष्ठ">आदेश पुस्तकालय</span>
     </div>
   </nav>
 
-  <div id="wrapper">
-    <div id="content_wrapper">
-      <style type="text/css">
-        body { font-family: kalimati, "Noto Sans Devanagari", "Nirmala UI", Mangal, sans-serif; }
-        dl { margin-bottom:50px; width:50%; float:left; }
-        dl dt { line-height:30px; background:#FFDCCB; color:#000; float:left; font-weight:bold; margin-right:10px; height:40px; width:200px; font-size:14px; padding-left:10px; }
-        dl dd { height:30px; padding:5px 0; margin:1px; background:#FAF5DA; font-size:14px; }
-      </style>
-      <div class="onecolumn">
-        <div class="content" id="tab1">
-          <form action="#" method="get" id="form1" onsubmit="return false;">
-            <table width="100%" class="global" style="border:1px solid #CCC;">
-              <tbody>
-                <tr>
-                  <td width="273">&nbsp;</td>
-                  <td width="143"><label>अभिलेख:</label></td>
-                  <td width="535">
-                    <strong id="selectedScopeText">आदेशको प्रकार अनुसार</strong>
-                    <span class="scope-help"> — माथिको dropdown बाट प्रकार वा sub category रोज्नुहोस्।</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td></td><td></td>
-                  <td><a class="button_dark order-reset-link" href="orders.html">सबै आदेश हेर्नुहोस्</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </form>
-          <br />
-          <div class="pageTitle">आदेश प्रकारअनुसार अभिलेख</div>
-          <center><span id="orderSearchStatus" class="order-search-status" aria-live="polite"></span></center>
-          <section id="smartResultPanel" class="smart-result-panel" aria-labelledby="smartResultTitle" hidden="hidden">
-            <div class="smart-result-head">
-              <strong id="smartResultTitle">TXT content मा भेटिएका प्रसङ्ग</strong>
-              <span id="smartResultCount"></span>
-            </div>
-            <div id="smartResultList" class="smart-result-list"></div>
-          </section>
-          <br />
-          <table class="record_display order-summary" width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tbody>
-              <tr>
-                <th>आदेशको समूह</th>
-                <th>देखाइएका आदेश</th>
-                <th>उपलब्ध TXT</th>
-                <th>खोज प्रकार</th>
-                <th>कार्य</th>
-              </tr>
-              <tr>
-                <td id="summaryCategoryCount">०</td>
-                <td id="orderResultCount">०</td>
-                <td id="summaryFileCount">०</td>
-                <td id="summarySearchMode">Normalizer</td>
-                <td>हेर्नुहोस् / डाउनलोड</td>
-              </tr>
-            </tbody>
-          </table>
-          <br /><br /><br />
-          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tbody>
-              <tr>
-                <td align="center" valign="center" colspan="3"><strong><span style="font-family:kalimati;">काठमाडौं जिल्ला अदालतको</span></strong></td>
-              </tr>
-              <tr>
-                <td align="center" valign="center" colspan="3"><span style="font-family:kalimati;"><strong>आदेश प्रकारअनुसार अभिलेख</strong></span></td>
-              </tr>
-              <tr><td colspan="3" align="center" valign="top"></td></tr>
-            </tbody>
-          </table>
-          <meta http-equiv="Content-Type" content="application/ms-word; charset=utf-8" />
-          <style type="text/css">
-            .judge { float:right; font-size:15px; color:#b41c1c; margin-right:41px; text-align:center; }
-          </style>
-          <br />
-          <table width="100%" cellspacing="0" cellpadding="5" style="border-collapse:collapse">
-            <tbody>
-              <tr bgcolor="#FFFFFF">
-                <td align="right"><b>आदेश अभिलेख</b></td>
-                <td align="left" colspan="6" class="judge"><b id="orderTableHeading">आदेशको प्रकार अनुसार</b></td>
-              </tr>
-            </tbody>
-          </table>
+  <main id="wrapper" class="library-main">
+    <header class="library-hero">
+      <p class="library-eyebrow">काठमाडौं जिल्ला अदालत · आदेश पुस्तकालय</p>
+      <h1>आदेश प्रकारअनुसार अभिलेख</h1>
+      <p class="library-description">आदेशको प्रकार छान्नुहोस्, आवश्यक पाठ खोज्नुहोस् र आदेश हेर्नुहोस् वा डाउनलोड गर्नुहोस्।</p>
+      <p id="orderIndexStatus" class="library-update" role="status">फाइल सूची पढिँदैछ…</p>
+    </header>
 
-          <div id="orderTables" aria-live="polite"></div>
-          <br class="clear" /><br class="clear" />
-        </div>
+    <section class="library-filters" aria-label="आदेश छान्नुहोस्">
+      <div class="library-filter-field">
+        <label for="orderCategoryInput">आदेशको प्रकार खोज्नुहोस्</label>
+        <input type="search" id="orderCategoryInput" list="orderCategorySuggestions" autocomplete="off" placeholder="जस्तै: थुनछेक, म्याद, साक्षी…" aria-controls="orderCategorySelect orderSubcategorySelect" />
+        <datalist id="orderCategorySuggestions"></datalist>
       </div>
-      <br class="clear" />
+      <div class="library-filter-field">
+        <label for="orderCategorySelect">आदेशको प्रकार</label>
+        <select id="orderCategorySelect" aria-controls="orderSubcategorySelect"><option value="">खोजिँदैछ…</option></select>
+      </div>
+      <div class="library-filter-field">
+        <label for="orderSubcategorySelect">Sub category</label>
+        <select id="orderSubcategorySelect" disabled="disabled"><option value="">सबै sub category</option></select>
+      </div>
+      <a class="order-reset-link" href="orders.html">सबै आदेश हेर्नुहोस् ↺</a>
+    </section>
+
+    <section class="library-stats" aria-label="अभिलेखको विवरण">
+      <div><strong id="summaryCategoryCount">०</strong><span>आदेशका प्रकार</span></div>
+      <div><strong id="orderResultCount">०</strong><span>देखाइएका आदेश</span></div>
+      <div><strong id="summaryFileCount">०</strong><span>उपलब्ध आदेश</span></div>
+      <div class="library-search-mode"><span>खोज सुविधा</span><strong id="summarySearchMode">Normalizer + Highlight</strong></div>
+    </section>
+
+    <div class="library-results-head">
+      <strong id="selectedScopeText">सबै आदेशका प्रकार</strong>
+      <span id="orderSearchStatus" class="order-search-status" role="status" aria-live="polite"></span>
+      <span id="orderTableHeading" class="sr-only">आदेशको प्रकार अनुसार</span>
     </div>
-  </div>
-  <br class="clear" />
-  <a href="#" class="scrollup" style="display:block;">Scroll</a>
-  <div id="footer"> © Copyright 2026 by Supreme Court of Nepal. All Right Reserved. </div>
+    <section id="smartResultPanel" class="smart-result-panel" aria-labelledby="smartResultTitle" hidden="hidden">
+      <div class="smart-result-head"><strong id="smartResultTitle">TXT content मा भेटिएका प्रसङ्ग</strong><span id="smartResultCount"></span></div>
+      <div id="smartResultList" class="smart-result-list"></div>
+    </section>
+    <div id="orderTables" aria-live="polite"></div>
+  </main>
+  <footer id="footer" class="library-footer">आदेश पुस्तकालय · काठमाडौं जिल्ला अदालत <a href="#">माथि जानुहोस् ↑</a></footer>
 
   <template id="orderTableTemplate">
     <section class="order-category-block">
@@ -162,9 +98,9 @@
             <th width="4%">क्र. स.</th>
             <th width="18%">FN निवेदन नं. तथा विषय<br />(मुद्दा नं. तथा मुद्दाको नाम)</th>
             <th width="17%">आदेश मिति तथा<br />इजलास/न्यायाधीश</th>
-            <th width="24%">निवेदक/वादी <strong>विरुद्ध</strong> विपक्षी/प्रतिवादी</th>
-            <th width="31%">आदेशको सङ्क्षेप</th>
-            <th width="6%">कार्य</th>
+            <th width="21%">निवेदक/वादी <strong>विरुद्ध</strong> विपक्षी/प्रतिवादी</th>
+            <th width="28%">आदेशको सङ्क्षेप</th>
+            <th width="12%">कार्य</th>
           </tr>
         </thead>
         <tbody class="order-rows"></tbody>
@@ -197,6 +133,6 @@
   <script src="order_data_part_02.js"></script>
   <script src="order_data_part_03.js"></script>
   <script src="order_data_part_04.js"></script>
-  <script src="order-library.js"></script>
+  <script src="order-library.js?v=auto-library-1"></script>
 </body>
 </html>

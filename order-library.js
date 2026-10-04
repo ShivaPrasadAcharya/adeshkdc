@@ -1,7 +1,25 @@
-(function () {
+(async function () {
   "use strict";
 
-  const data = window.KDC_ORDER_DATA || { orders: [] };
+  let data = window.KDC_ORDER_DATA || { orders: [] };
+  if (/^https?:$/.test(location.protocol)) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    try {
+      const response = await fetch(new URL("order-index.json", location.href), { cache: "no-store", signal: controller.signal });
+      if (!response.ok) throw new Error("Order index unavailable");
+      const index = await response.json();
+      if (!Array.isArray(index.orders) || !index.orders.every(order => order && order.id && order.category && order.file && typeof order.content === "string")) {
+        throw new Error("Invalid order index");
+      }
+      data = index;
+      window.KDC_ORDER_DATA = index;
+    } catch (error) {
+      // The original embedded files remain available offline or during a failed refresh.
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
   const orders = Array.isArray(data.orders) ? data.orders : [];
   const ALL_CATEGORIES = "__all_categories__";
   const parentSelect = document.getElementById("orderCategorySelect");
@@ -44,6 +62,18 @@
   let categoryInputTimer = 0;
   let modalDownloadUrl = "";
   const recentSearches = [];
+
+  const indexStatus = document.getElementById("orderIndexStatus");
+  if (indexStatus) {
+    indexStatus.textContent = data.generatedAt
+      ? "सूची अद्यावधिक: " + new Date(data.generatedAt).toLocaleString("ne-NP", { timeZone: "Asia/Kathmandu", dateStyle: "medium", timeStyle: "short" })
+      : "सुरक्षित अभिलेखबाट आदेश लोड भयो।";
+  }
+
+  function categoryLabel(category) {
+    const order = orders.find(order => order.category === category);
+    return order && order.categoryNepali || String(category || "").split("_")[0];
+  }
 
   if (!parentSelect || !childSelect || !searchForm || !tablesHost || !tableTemplate) return;
 
@@ -280,7 +310,7 @@
       ? "All matched CATEGORY — " + nepaliNumber(matchedCategories.length) + " प्रकार"
       : "All CATEGORY — सबै आदेशका प्रकार";
     parentSelect.replaceChildren(new Option(allLabel, ALL_CATEGORIES));
-    matchedCategories.forEach((category) => parentSelect.add(new Option(category, category)));
+    matchedCategories.forEach((category) => parentSelect.add(new Option(categoryLabel(category), category)));
     if (parentSuggestions) {
       parentSuggestions.replaceChildren(...availableCategories.map((category) => new Option(category, category)));
     }
@@ -290,7 +320,7 @@
 
   function subcategoryLabel(order) {
     const sequence = String(order.file || "").match(/_(\d+)\.txt$/i) || String(order.id || "").match(/-(\d+)$/);
-    return order.category + "_" + (sequence ? sequence[1] : "1");
+    return categoryLabel(order.category) + " · " + (sequence ? sequence[1] : order.sourceIndex || "1");
   }
 
   function populateChildren(requestedFile) {
@@ -444,7 +474,7 @@
     const section = fragment.querySelector(".order-category-block");
     const title = fragment.querySelector(".order-category-title");
     const body = fragment.querySelector(".order-rows");
-    appendHighlightedText(title, category + " — आदेश तालिका", query, useNormalizer, highlight);
+    appendHighlightedText(title, categoryLabel(category), query, useNormalizer, highlight);
     section.setAttribute("data-category", category);
     if (categoryOrders.length) {
       categoryOrders.forEach((order, index) => body.appendChild(rowFor(order, index, query, useNormalizer, highlight)));
@@ -545,7 +575,7 @@
     const categoryFilter = parentInput ? parentInput.value.trim() : "";
     const scopeLabel = category === ALL_CATEGORIES
       ? (categoryFilter ? "Matched CATEGORY — “" + categoryFilter + "”" : "All CATEGORY — सबै आदेशका प्रकार")
-      : category;
+      : categoryLabel(category);
     const childLabel = requestedFile ? requestedFile.replace(/\.txt$/i, "") : "";
     selectedScopeText.textContent = childLabel ? scopeLabel + " / " + childLabel : scopeLabel;
     tableHeading.textContent = scopeLabel;
@@ -659,7 +689,7 @@
   render();
 
   parentSelect.addEventListener("change", () => {
-    if (parentInput && parentSelect.value !== ALL_CATEGORIES) parentInput.value = parentSelect.value;
+    if (parentInput) parentInput.value = parentSelect.value === ALL_CATEGORIES ? "" : categoryLabel(parentSelect.value);
     populateParents(parentSelect.value);
     populateChildren("");
     render();

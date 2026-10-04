@@ -498,6 +498,14 @@
               hover, smart search र मूल filename सहित TXT download सुविधा यथावत् छ।</span
             >
           </div>
+          <div class="mode">
+            <strong>नयाँ फाइल थप्नुहोस्</strong>
+            <span>आदेश पुस्तकालयको माथिल्लो ribbon मा <a href="https://github.com/ShivaPrasadAcharya/adeshkdc/upload/main/orders" target="_blank" rel="noopener noreferrer">＋ Add files</a> थिच्नुहोस्। UTF-8 TXT वा Input/Output बाट बनेको <code>order_data_*.js</code> upload गरी <b>Commit changes</b> गर्नुहोस्। TXT का प्रत्येक आदेशको अन्त्यमा “इति संवत” वा “ईति संवत” हुनुपर्छ। केही मिनेटपछि वेबसाइट refresh गर्दा नयाँ आदेश स्वतः देखिन्छन्।</span>
+          </div>
+          <div class="mode">
+            <strong>स्वतः अद्यावधिक हुने सूची</strong>
+            <span><b>Update order library</b> GitHub Action ले root का <code>order_data_*.js</code> र <code>orders/</code> भित्रका TXT/script पढी <code>order-index.json</code> बनाउँछ। नयाँ फाइल, संशोधन र हटाइएका फाइल स्वतः समावेश हुन्छन्; HTML मा script link थप्नुपर्दैन। फाइल अमान्य भए Action मा कारण देखिन्छ र अघिल्लो सूची यथावत् रहन्छ। Normalizer, Smart, Highlight, preview, hover, copy, download र print सुविधा प्रयोग गर्न सकिन्छ।</span>
+          </div>
         </section>
 
         <section class="card" id="output">
