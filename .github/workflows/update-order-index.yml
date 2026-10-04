@@ -1,0 +1,50 @@
+name: Update order library
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: order-library-index
+  cancel-in-progress: false
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Read the latest files
+        uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Generate and validate the order index
+        run: |
+          node --test scripts/build-order-index.test.mjs
+          node scripts/build-order-index.mjs
+
+      - name: Save the updated index
+        id: save
+        run: |
+          if [ -z "$(git status --porcelain -- order-index.json)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add order-index.json
+          git commit -m "Update order library from uploaded files"
+          git push origin HEAD:main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # GITHUB_TOKEN pushes do not start another Pages build automatically.
+      - name: Publish the updated list to the existing GitHub Pages site
+        if: steps.save.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
